@@ -303,6 +303,28 @@
       transform: scale(1.02);
     }
 
+    /* Control Buttons */
+    .control-btn {
+      position: fixed;
+      width: 40px;
+      height: 40px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 50%;
+      color: rgba(255,255,255,0.4);
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 50;
+    }
+    .control-btn:hover {
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.7);
+    }
+    body.fullscreen .control-btn,
+    body.fullscreen .attribution,
+    body.fullscreen #word-history { opacity: 0; }
+
     /* Attribution */
     .attribution {
       position: fixed;
@@ -373,7 +395,8 @@
   </div>
 
   <!-- Attribution -->
-  <div class="attribution">
+  <button id="fullscreen-btn" class="control-btn" onclick="toggleFullscreen()" title="Fullscreen" style="bottom:20px;left:20px;">⛶</button>
+    <div class="attribution">
     "Truth is a pathless land" — <a href="https://jkrishnamurti.org" target="_blank" rel="noopener">J. Krishnamurti</a>
   </div>
 
@@ -1121,6 +1144,22 @@
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, width, height);
     }
+
+    // Fullscreen
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+        document.body.classList.add('fullscreen');
+        document.getElementById('fullscreen-btn').textContent = '⛶';
+      } else {
+        document.exitFullscreen();
+        document.body.classList.remove('fullscreen');
+        document.getElementById('fullscreen-btn').textContent = '⛶';
+      }
+    }
+    document.addEventListener('fullscreenchange', () => {
+      if (!document.fullscreenElement) document.body.classList.remove('fullscreen');
+    });
 
     // Start
     init();
