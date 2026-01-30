@@ -1122,6 +1122,33 @@
       ctx.fillRect(0, 0, width, height);
     }
 
+    // Keyboard shortcuts
+    let paused = false;
+    document.addEventListener('keydown', (e) => {
+      if (e.target === input) return;
+      
+      switch(e.key.toLowerCase()) {
+        case ' ':
+          e.preventDefault();
+          paused = !paused;
+          if (!paused) animate();
+          break;
+        case 's':
+          const link = document.createElement('a');
+          link.download = 'question-field-' + Date.now() + '.png';
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+          break;
+        case 'r':
+          restart();
+          break;
+        case 'f':
+          if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+          else document.exitFullscreen();
+          break;
+      }
+    });
+
     // Start
     init();
   </script>
