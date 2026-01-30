@@ -12,342 +12,163 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    html, body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; }
     body {
       font-family: 'Cormorant Garamond', Georgia, serif;
-      background-color: #050508;
+      background-color: #0a0a0f;
       color: rgba(255, 255, 255, 0.9);
     }
-
-    #canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-    }
+    canvas { display: block; position: fixed; top: 0; left: 0; }
 
     /* Intro Screen */
     #intro {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: radial-gradient(ellipse at center, #0a0a12 0%, #030305 100%);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 200;
-      cursor: pointer;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      z-index: 200; cursor: pointer;
       transition: opacity 1.5s ease, visibility 1.5s ease;
     }
-
-    #intro.hidden {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-
+    #intro.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
     #intro h1 {
-      font-size: clamp(2rem, 6vw, 4rem);
-      font-weight: 300;
-      letter-spacing: 0.15em;
-      margin-bottom: 20px;
-      opacity: 0;
-      animation: fadeIn 2s ease 0.5s forwards;
+      font-size: clamp(2rem, 6vw, 4rem); font-weight: 300;
+      letter-spacing: 0.15em; margin-bottom: 20px;
+      opacity: 0; animation: fadeIn 2s ease 0.5s forwards;
     }
-
     #intro p {
-      font-size: clamp(1rem, 2.5vw, 1.3rem);
-      font-weight: 300;
-      letter-spacing: 0.1em;
-      opacity: 0;
-      color: rgba(255, 255, 255, 0.5);
+      font-size: clamp(1rem, 2.5vw, 1.3rem); font-weight: 300;
+      letter-spacing: 0.1em; opacity: 0; color: rgba(255,255,255,0.5);
       animation: fadeIn 2s ease 1.5s forwards;
     }
-
     #intro .enter-hint {
-      position: absolute;
-      bottom: 60px;
-      font-size: 0.9rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      opacity: 0;
+      position: absolute; bottom: 60px; font-size: 0.9rem;
+      letter-spacing: 0.2em; text-transform: uppercase; opacity: 0;
       animation: fadeIn 2s ease 2.5s forwards, pulse 3s ease-in-out 3s infinite;
     }
-
-    @keyframes fadeIn {
-      to { opacity: 1; }
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 0.4; }
-      50% { opacity: 0.8; }
-    }
+    @keyframes fadeIn { to { opacity: 1; } }
+    @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
 
     /* Main Interface */
     #interface {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      align-items: center;
-      z-index: 10;
-      padding: 20px;
-      padding-bottom: 15vh;
-      opacity: 0;
-      transition: opacity 1s ease;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
+      z-index: 10; padding: 20px; padding-bottom: 12vh;
+      opacity: 0; transition: opacity 1s ease;
     }
-
-    #interface.visible {
-      opacity: 1;
-    }
-
+    #interface.visible { opacity: 1; }
     #question {
-      font-size: clamp(1.5rem, 4vw, 2.8rem);
-      color: rgba(255, 255, 255, 0.75);
-      margin-bottom: 50px;
-      letter-spacing: 0.12em;
-      font-weight: 300;
-      text-align: center;
+      font-size: clamp(1.5rem, 4vw, 2.8rem); color: rgba(255,255,255,0.75);
+      margin-bottom: 50px; letter-spacing: 0.12em; font-weight: 300; text-align: center;
       transition: opacity 1.5s ease, transform 1.5s ease;
+      text-shadow: 0 0 30px rgba(0,0,0,0.8);
     }
-
-    #question.faded {
-      opacity: 0.2;
-      transform: translateY(-30px) scale(0.95);
-    }
-
-    #input-container {
-      position: relative;
-      width: 100%;
-      max-width: 650px;
-    }
-
+    #question.faded { opacity: 0.2; transform: translateY(-30px) scale(0.95); }
+    #input-container { position: relative; width: 100%; max-width: 650px; }
     #user-input {
-      width: 100%;
-      padding: 22px 35px;
+      width: 100%; padding: 22px 35px;
       font-size: clamp(1.2rem, 3vw, 1.9rem);
-      font-family: 'Cormorant Garamond', Georgia, serif;
-      font-weight: 400;
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 6px;
-      color: rgba(255, 255, 255, 0.9);
-      text-align: center;
-      outline: none;
-      transition: all 0.6s ease;
-      letter-spacing: 0.06em;
+      font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 400;
+      background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 6px; color: rgba(255,255,255,0.9); text-align: center;
+      outline: none; transition: all 0.6s ease; letter-spacing: 0.06em;
+      backdrop-filter: blur(10px);
     }
-
-    #user-input::placeholder {
-      color: rgba(255, 255, 255, 0.25);
-      font-style: italic;
-      font-weight: 300;
-    }
-
+    #user-input::placeholder { color: rgba(255,255,255,0.3); font-style: italic; font-weight: 300; }
     #user-input:focus {
-      background: rgba(255, 255, 255, 0.04);
-      border-color: rgba(255, 255, 255, 0.15);
-      box-shadow: 0 0 40px rgba(255, 255, 255, 0.03);
+      background: rgba(0,0,0,0.4); border-color: rgba(255,255,255,0.25);
+      box-shadow: 0 0 40px rgba(255,255,255,0.05);
     }
 
     /* Word Echo */
     #word-echo {
-      position: fixed;
-      bottom: 50px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 0.95rem;
-      color: rgba(255, 255, 255, 0.35);
-      letter-spacing: 0.35em;
-      text-transform: uppercase;
-      font-weight: 300;
-      opacity: 0;
-      transition: opacity 0.8s ease;
-      max-width: 80%;
-      text-align: center;
+      position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%);
+      font-size: 0.95rem; color: rgba(255,255,255,0.35);
+      letter-spacing: 0.35em; text-transform: uppercase; font-weight: 300;
+      opacity: 0; transition: opacity 0.8s ease;
+    }
+    #word-echo.visible { opacity: 1; }
+
+    /* Stats */
+    #stats {
+      position: fixed; top: 20px; right: 20px;
+      font-size: 11px; color: rgba(255,255,255,0.3);
+      letter-spacing: 1px; text-align: right; z-index: 15;
     }
 
-    #word-echo.visible {
-      opacity: 1;
+    /* Palette indicator */
+    #palette-indicator {
+      position: fixed; top: 20px; left: 20px;
+      display: flex; gap: 5px; z-index: 15;
     }
+    .color-dot { width: 10px; height: 10px; border-radius: 50%; opacity: 0.7; }
 
-    /* Word History */
-    #word-history {
-      position: fixed;
-      top: 30px;
-      right: 30px;
-      max-width: 200px;
-      text-align: right;
-      z-index: 15;
-    }
-
-    #word-history .word {
-      display: inline-block;
-      font-size: 0.8rem;
-      color: rgba(255, 255, 255, 0.2);
-      margin: 3px 5px;
-      letter-spacing: 0.1em;
-      animation: wordAppear 0.5s ease;
-    }
-
-    @keyframes wordAppear {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
+    /* Mode indicator */
+    #mode-indicator {
+      position: fixed; top: 45px; left: 20px;
+      font-size: 11px; color: rgba(255,255,255,0.3);
+      letter-spacing: 2px; text-transform: uppercase; z-index: 15;
     }
 
     /* Reveal Screen */
     #reveal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(3, 3, 8, 0.97);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 100;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 2.5s ease;
-      padding: 40px;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(3,3,8,0.97);
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      z-index: 100; opacity: 0; pointer-events: none;
+      transition: opacity 2.5s ease; padding: 40px;
     }
-
-    #reveal.visible {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
+    #reveal.visible { opacity: 1; pointer-events: auto; }
     #reveal h2 {
-      font-size: clamp(1.6rem, 4.5vw, 2.8rem);
-      color: rgba(255, 255, 255, 0.9);
-      font-weight: 300;
-      margin-bottom: 40px;
-      letter-spacing: 0.12em;
-      text-align: center;
-      opacity: 0;
-      animation: revealText 1.5s ease 0.5s forwards;
+      font-size: clamp(1.6rem, 4.5vw, 2.8rem); color: rgba(255,255,255,0.9);
+      font-weight: 300; margin-bottom: 40px; letter-spacing: 0.12em; text-align: center;
+      opacity: 0; animation: revealText 1.5s ease 0.5s forwards;
     }
-
     #reveal .reveal-text {
-      font-size: clamp(1rem, 2.5vw, 1.35rem);
-      color: rgba(255, 255, 255, 0.6);
-      max-width: 600px;
-      text-align: center;
-      line-height: 2;
-      margin-bottom: 15px;
-      opacity: 0;
+      font-size: clamp(1rem, 2.5vw, 1.35rem); color: rgba(255,255,255,0.6);
+      max-width: 600px; text-align: center; line-height: 2; margin-bottom: 15px; opacity: 0;
     }
-
     #reveal .reveal-text:nth-child(2) { animation: revealText 1.5s ease 1.5s forwards; }
     #reveal .reveal-text:nth-child(3) { animation: revealText 1.5s ease 2.5s forwards; }
     #reveal .reveal-text:nth-child(4) { animation: revealText 1.5s ease 3.5s forwards; }
     #reveal .reveal-text:nth-child(5) { animation: revealText 1.5s ease 4.5s forwards; }
-
-    @keyframes revealText {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
+    @keyframes revealText { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     #reveal .words-used {
-      font-style: italic;
-      color: rgba(255, 255, 255, 0.35);
-      margin-top: 40px;
-      font-size: 0.9rem;
-      letter-spacing: 0.1em;
-      opacity: 0;
+      font-style: italic; color: rgba(255,255,255,0.35); margin-top: 40px;
+      font-size: 0.9rem; letter-spacing: 0.1em; opacity: 0;
       animation: revealText 1.5s ease 5.5s forwards;
     }
-
     #reveal button {
-      margin-top: 50px;
-      padding: 16px 50px;
+      margin-top: 50px; padding: 16px 50px;
       font-family: 'Cormorant Garamond', Georgia, serif;
-      font-size: 1.1rem;
-      font-weight: 400;
-      background: transparent;
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      color: rgba(255, 255, 255, 0.7);
-      cursor: pointer;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      transition: all 0.4s ease;
-      opacity: 0;
-      animation: revealText 1.5s ease 6s forwards;
+      font-size: 1.1rem; font-weight: 400; background: transparent;
+      border: 1px solid rgba(255,255,255,0.25); color: rgba(255,255,255,0.7);
+      cursor: pointer; letter-spacing: 0.25em; text-transform: uppercase;
+      transition: all 0.4s ease; opacity: 0; animation: revealText 1.5s ease 6s forwards;
     }
-
-    #reveal button:hover {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(255, 255, 255, 0.4);
-      transform: scale(1.02);
-    }
+    #reveal button:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.4); }
 
     /* Attribution */
     .attribution {
-      position: fixed;
-      bottom: 18px;
-      right: 25px;
-      font-size: 0.7rem;
-      color: rgba(255, 255, 255, 0.15);
-      letter-spacing: 0.12em;
-      z-index: 5;
+      position: fixed; bottom: 18px; right: 25px;
+      font-size: 0.7rem; color: rgba(255,255,255,0.15);
+      letter-spacing: 0.12em; z-index: 5;
     }
+    .attribution a { color: rgba(255,255,255,0.25); text-decoration: none; }
 
-    .attribution a {
-      color: rgba(255, 255, 255, 0.25);
-      text-decoration: none;
-      transition: color 0.3s ease;
-    }
-
-    .attribution a:hover {
-      color: rgba(255, 255, 255, 0.5);
-    }
-
-    /* Mobile */
     @media (max-width: 600px) {
-      #word-history {
-        display: none;
-      }
-      
-      #user-input {
-        padding: 18px 20px;
-      }
+      #stats, #palette-indicator, #mode-indicator { display: none; }
     }
   </style>
 </head>
 <body>
-  <!-- Intro Screen -->
   <div id="intro">
     <h1>The Question Field</h1>
     <p>An exploration of observation and creation</p>
     <div class="enter-hint">click to enter</div>
   </div>
 
-  <!-- Canvas -->
   <canvas id="canvas"></canvas>
   
-  <!-- Main Interface -->
   <div id="interface">
     <div id="question">What do you see?</div>
     <div id="input-container">
@@ -355,13 +176,14 @@
     </div>
   </div>
 
-  <!-- Word History -->
-  <div id="word-history"></div>
-
-  <!-- Word Echo -->
+  <div id="palette-indicator"></div>
+  <div id="mode-indicator">flow</div>
+  <div id="stats">
+    <div id="particle-count">0 particles</div>
+    <div id="fps-display">60 fps</div>
+  </div>
   <div id="word-echo"></div>
 
-  <!-- Reveal -->
   <div id="reveal">
     <h2>The observer is the observed</h2>
     <p class="reveal-text">You believed you were describing what you saw.</p>
@@ -372,15 +194,13 @@
     <button onclick="restart()">Begin again</button>
   </div>
 
-  <!-- Attribution -->
   <div class="attribution">
     "Truth is a pathless land" — <a href="https://jkrishnamurti.org" target="_blank" rel="noopener">J. Krishnamurti</a>
   </div>
 
   <script>
     // ============================================
-    // THE QUESTION FIELD
-    // An exploration of "observer is the observed"
+    // THE QUESTION FIELD - Flow Field Edition
     // ============================================
 
     const canvas = document.getElementById('canvas');
@@ -390,229 +210,339 @@
     const input = document.getElementById('user-input');
     const question = document.getElementById('question');
     const wordEcho = document.getElementById('word-echo');
-    const wordHistory = document.getElementById('word-history');
     const reveal = document.getElementById('reveal');
     const allWordsSpan = document.getElementById('all-words');
+    const paletteIndicator = document.getElementById('palette-indicator');
+    const modeIndicator = document.getElementById('mode-indicator');
 
     let width, height;
-    let animationId;
+    let particles = [];
+    let flowField = [];
+    let cols, rows;
+    const scale = 20;
+    let zoff = 0;
+    let mouseX = 0, mouseY = 0;
+    let mouseInfluence = 0;
+    let started = false;
     let allWords = [];
     let lastInputTime = 0;
     let revealTriggered = false;
-    let started = false;
-    let time = 0;
+    let frameCount = 0;
+    let lastTime = performance.now();
+    let fps = 60;
 
     // Visual state
     let state = {
-      hue: 240,
-      saturation: 15,
-      lightness: 5,
-      targetHue: 240,
-      targetSaturation: 15,
-      targetLightness: 5,
-      
-      fractalDepth: 3,
-      fractalScale: 0.5,
-      fractalRotation: 0,
-      fractalBranches: 2,
-      fractalType: 'tree',
-      
-      particleCount: 60,
-      particleSpeed: 0.2,
-      particleSize: 1.5,
-      
-      globalRotation: 0,
-      rotationSpeed: 0.0003,
-      pulse: 0,
-      pulseSpeed: 0.008,
-      
-      chaos: 0,
-      order: 0.5,
-      brightness: 0.25,
-      complexity: 0.3,
-      
-      hasStars: false,
-      hasWater: false,
-      hasFire: false,
-      hasVoid: true,
-      hasLight: false,
-      hasGeometry: false,
-      hasNebula: false,
-      
-      calm: 0.5,
-      intensity: 0.2,
-      
-      // Smoothing
-      currentBrightness: 0.25,
-      currentComplexity: 0.3
+      paletteIndex: 0,
+      modeIndex: 0,
+      particleCount: 800,
+      trailAlpha: 0.05,
+      particleSpeed: 1,
+      flowStrength: 0.5,
+      turbulence: 0.1,
+      mouseStrength: 1,
+      backgroundColor: [10, 10, 15],
+      glowIntensity: 0,
+      symmetry: 1,
+      waveAmplitude: 0
     };
 
-    let particles = [];
+    const palettes = [
+      // Ethereal Purple (default)
+      ['#667eea', '#764ba2', '#f953c6', '#b91d73', '#00d2ff'],
+      // Ocean Depths
+      ['#00c9ff', '#92fe9d', '#00b09b', '#96c93d', '#0575e6'],
+      // Sunset Fire
+      ['#f12711', '#f5af19', '#fc4a1a', '#f7b733', '#ff416c'],
+      // Cyber Neon
+      ['#00ff87', '#60efff', '#ff00e5', '#00ffff', '#ff6b6b'],
+      // Aurora
+      ['#43cea2', '#185a9d', '#6dd5ed', '#2193b0', '#00d2d3'],
+      // Cosmic
+      ['#fc466b', '#3f5efb', '#a770ef', '#cf8bf3', '#fdb99b'],
+      // Monochrome
+      ['#ffffff', '#cccccc', '#999999', '#666666', '#ffffff'],
+      // Golden
+      ['#f7971e', '#ffd200', '#f9a602', '#ff6f00', '#ffeb3b'],
+      // Forest
+      ['#134e5e', '#71b280', '#2d5016', '#a8e063', '#56ab2f'],
+      // Blood Moon
+      ['#8e0000', '#ff0000', '#4a0000', '#ff4444', '#220000']
+    ];
 
-    // Keywords
+    const modes = ['flow', 'attract', 'repel', 'vortex', 'orbit', 'explode'];
+
+    // Keywords and effects
     const keywords = {
-      // Colors
-      'red': () => { state.targetHue = 0; state.targetSaturation = 75; },
-      'blue': () => { state.targetHue = 220; state.targetSaturation = 65; },
-      'green': () => { state.targetHue = 140; state.targetSaturation = 55; },
-      'purple': () => { state.targetHue = 280; state.targetSaturation = 65; },
-      'violet': () => { state.targetHue = 270; state.targetSaturation = 70; },
-      'gold': () => { state.targetHue = 45; state.targetSaturation = 85; state.brightness = 0.5; },
-      'golden': () => { state.targetHue = 48; state.targetSaturation = 85; state.brightness = 0.55; },
-      'silver': () => { state.targetSaturation = 10; state.brightness = 0.6; },
-      'white': () => { state.targetLightness = 85; state.brightness = 0.8; state.hasLight = true; },
-      'black': () => { state.targetLightness = 2; state.brightness = 0.08; state.hasVoid = true; },
-      'orange': () => { state.targetHue = 28; state.targetSaturation = 85; },
-      'pink': () => { state.targetHue = 330; state.targetSaturation = 65; },
-      'cyan': () => { state.targetHue = 185; state.targetSaturation = 75; },
-      'indigo': () => { state.targetHue = 260; state.targetSaturation = 70; },
-      'crimson': () => { state.targetHue = 348; state.targetSaturation = 85; state.intensity = 0.6; },
-      
-      // Light and dark
-      'dark': () => { state.targetLightness = Math.max(2, state.targetLightness - 6); state.brightness = 0.12; },
-      'darkness': () => { state.targetLightness = 1; state.brightness = 0.05; state.hasVoid = true; },
-      'light': () => { state.targetLightness = Math.min(90, state.targetLightness + 12); state.brightness = 0.7; state.hasLight = true; },
-      'bright': () => { state.brightness = 0.8; state.targetLightness = 65; },
-      'dim': () => { state.brightness = 0.15; },
-      'glow': () => { state.brightness = 0.6; state.pulseSpeed = 0.018; state.hasLight = true; },
-      'glowing': () => { state.brightness = 0.7; state.pulseSpeed = 0.02; state.hasLight = true; },
-      'shadow': () => { state.brightness = 0.12; state.targetLightness = 4; },
-      'shadows': () => { state.brightness = 0.1; state.chaos = 0.25; },
-      
-      // Fractals
-      'fractal': () => { state.fractalDepth = 7; state.complexity = 0.85; },
-      'fractals': () => { state.fractalDepth = 8; state.complexity = 0.95; },
-      'tree': () => { state.fractalType = 'tree'; state.fractalDepth = 6; state.fractalBranches = 2; },
-      'trees': () => { state.fractalType = 'tree'; state.fractalDepth = 7; state.fractalBranches = 3; },
-      'branch': () => { state.fractalType = 'tree'; state.fractalBranches = 3; },
-      'branches': () => { state.fractalType = 'tree'; state.fractalBranches = 4; state.fractalDepth = 6; },
-      'spiral': () => { state.fractalType = 'spiral'; state.fractalDepth = 9; state.rotationSpeed = 0.0015; },
-      'spirals': () => { state.fractalType = 'spiral'; state.fractalDepth = 11; state.rotationSpeed = 0.002; },
-      'mandala': () => { state.fractalType = 'mandala'; state.fractalDepth = 6; state.fractalBranches = 8; },
-      'flower': () => { state.fractalType = 'mandala'; state.fractalBranches = 6; state.targetHue = 330; state.targetSaturation = 50; },
-      'flowers': () => { state.fractalType = 'mandala'; state.fractalBranches = 12; state.targetSaturation = 60; },
-      'lotus': () => { state.fractalType = 'mandala'; state.fractalBranches = 8; state.targetHue = 320; state.brightness = 0.5; },
-      'sierpinski': () => { state.fractalType = 'sierpinski'; state.fractalDepth = 7; },
-      'triangle': () => { state.fractalType = 'sierpinski'; state.hasGeometry = true; },
-      'triangles': () => { state.fractalType = 'sierpinski'; state.fractalDepth = 6; state.hasGeometry = true; },
-      'julia': () => { state.fractalType = 'julia'; state.fractalDepth = 50; state.complexity = 1; },
-      'mandelbrot': () => { state.fractalType = 'julia'; state.fractalDepth = 60; state.complexity = 1; },
-      
-      // Nature
-      'stars': () => { state.hasStars = true; state.particleCount = 250; state.targetLightness = 3; },
-      'star': () => { state.hasStars = true; state.particleCount = 120; },
-      'cosmos': () => { state.hasStars = true; state.hasNebula = true; state.particleCount = 350; state.fractalType = 'spiral'; state.targetHue = 270; },
-      'universe': () => { state.hasStars = true; state.hasNebula = true; state.particleCount = 450; state.complexity = 1; state.fractalDepth = 9; },
-      'galaxy': () => { state.hasStars = true; state.fractalType = 'spiral'; state.rotationSpeed = 0.0008; state.targetHue = 260; state.hasNebula = true; },
-      'nebula': () => { state.hasNebula = true; state.targetHue = 280; state.targetSaturation = 50; state.brightness = 0.4; },
-      'water': () => { state.hasWater = true; state.targetHue = 200; state.calm = 0.85; },
-      'ocean': () => { state.hasWater = true; state.targetHue = 210; state.pulseSpeed = 0.006; state.calm = 0.75; },
-      'wave': () => { state.hasWater = true; state.pulseSpeed = 0.012; },
-      'waves': () => { state.hasWater = true; state.pulseSpeed = 0.018; state.intensity = 0.45; },
-      'fire': () => { state.hasFire = true; state.targetHue = 18; state.targetSaturation = 100; state.intensity = 0.85; },
-      'flame': () => { state.hasFire = true; state.targetHue = 22; state.chaos = 0.45; },
-      'flames': () => { state.hasFire = true; state.targetHue = 12; state.chaos = 0.65; state.particleSpeed = 0.9; },
-      'moon': () => { state.hasLight = true; state.targetSaturation = 5; state.brightness = 0.4; state.targetHue = 50; },
-      'sun': () => { state.hasLight = true; state.targetHue = 45; state.brightness = 0.9; state.targetSaturation = 80; },
-      
-      // Abstract
-      'nothing': () => { state.targetLightness = 0; state.particleCount = 0; state.fractalDepth = 0; state.hasVoid = true; state.brightness = 0; },
-      'void': () => { state.targetLightness = 0; state.hasVoid = true; state.particleCount = 8; state.brightness = 0.02; },
-      'empty': () => { state.targetLightness = 2; state.particleCount = 3; state.fractalDepth = 1; },
-      'emptiness': () => { state.targetLightness = 0; state.particleCount = 0; state.brightness = 0; },
-      'everything': () => { state.complexity = 1; state.fractalDepth = 9; state.particleCount = 350; state.hasStars = true; state.hasNebula = true; },
-      'infinite': () => { state.fractalDepth = 10; state.complexity = 1; state.rotationSpeed = 0.0008; },
-      'infinity': () => { state.fractalDepth = 11; state.fractalType = 'spiral'; state.rotationSpeed = 0.001; },
-      'chaos': () => { state.chaos = 0.9; state.particleSpeed = 1.8; state.rotationSpeed = 0.004; },
-      'chaotic': () => { state.chaos = 0.75; state.particleSpeed = 1.4; },
-      'order': () => { state.order = 1; state.chaos = 0; state.hasGeometry = true; state.fractalType = 'mandala'; },
-      'pattern': () => { state.order = 0.85; state.fractalDepth = 7; state.hasGeometry = true; },
-      'patterns': () => { state.order = 0.95; state.fractalDepth = 8; state.fractalType = 'mandala'; },
-      'geometry': () => { state.hasGeometry = true; state.order = 0.9; state.fractalType = 'sierpinski'; },
-      'geometric': () => { state.hasGeometry = true; state.order = 0.85; },
-      'sacred': () => { state.hasGeometry = true; state.fractalType = 'mandala'; state.fractalBranches = 12; state.targetHue = 50; state.brightness = 0.5; },
-      'complex': () => { state.complexity = 0.9; state.fractalDepth = 8; },
-      'simple': () => { state.complexity = 0.2; state.fractalDepth = 2; state.particleCount = 20; },
-      
-      // Movement
-      'still': () => { state.rotationSpeed = 0; state.particleSpeed = 0.03; state.calm = 1; },
-      'stillness': () => { state.rotationSpeed = 0; state.particleSpeed = 0; state.pulseSpeed = 0.002; state.calm = 1; },
-      'calm': () => { state.calm = 1; state.rotationSpeed = 0.00015; state.pulseSpeed = 0.004; },
-      'peace': () => { state.calm = 1; state.chaos = 0; state.intensity = 0.08; state.targetHue = 220; },
-      'peaceful': () => { state.calm = 0.95; state.intensity = 0.15; },
-      'serene': () => { state.calm = 1; state.particleSpeed = 0.05; state.brightness = 0.4; },
-      'flow': () => { state.rotationSpeed = 0.0015; state.particleSpeed = 0.7; },
-      'flowing': () => { state.rotationSpeed = 0.002; state.hasWater = true; },
-      'move': () => { state.rotationSpeed = 0.0025; state.particleSpeed = 0.9; },
-      'movement': () => { state.rotationSpeed = 0.003; state.particleSpeed = 1.1; },
-      'fast': () => { state.rotationSpeed = 0.007; state.particleSpeed = 1.8; },
-      'slow': () => { state.rotationSpeed = 0.0002; state.particleSpeed = 0.08; },
-      'spin': () => { state.rotationSpeed = 0.008; },
-      'spinning': () => { state.rotationSpeed = 0.012; },
-      'dance': () => { state.rotationSpeed = 0.004; state.pulseSpeed = 0.025; state.chaos = 0.25; },
-      'dancing': () => { state.rotationSpeed = 0.005; state.pulseSpeed = 0.035; },
-      'breathe': () => { state.pulseSpeed = 0.012; state.calm = 0.85; },
-      'breathing': () => { state.pulseSpeed = 0.018; state.calm = 0.75; },
-      'pulse': () => { state.pulseSpeed = 0.025; },
-      'pulsing': () => { state.pulseSpeed = 0.035; state.intensity = 0.55; },
-      'vibrate': () => { state.chaos = 0.4; state.pulseSpeed = 0.04; },
-      'expand': () => { state.fractalScale = Math.min(1.5, state.fractalScale + 0.3); state.pulseSpeed = 0.01; },
-      'contract': () => { state.fractalScale = Math.max(0.2, state.fractalScale - 0.2); },
-      
-      // Size
-      'big': () => { state.fractalScale = 0.85; state.particleSize = 3.5; },
-      'small': () => { state.fractalScale = 0.25; state.particleSize = 0.8; },
-      'tiny': () => { state.fractalScale = 0.15; state.particleSize = 0.4; state.particleCount += 150; },
-      'vast': () => { state.fractalScale = 1.2; state.particleCount = 350; },
-      'deep': () => { state.fractalDepth += 3; state.targetLightness = Math.max(2, state.targetLightness - 4); },
-      
-      // Feelings/concepts
-      'love': () => { state.targetHue = 340; state.targetSaturation = 70; state.pulseSpeed = 0.018; state.brightness = 0.5; },
-      'fear': () => { state.chaos = 0.55; state.targetLightness = 3; state.targetHue = 0; state.targetSaturation = 25; },
-      'joy': () => { state.targetHue = 48; state.targetSaturation = 85; state.brightness = 0.7; state.particleSpeed = 0.9; },
-      'sorrow': () => { state.targetHue = 220; state.targetSaturation = 25; state.brightness = 0.15; state.particleSpeed = 0.08; },
-      'anger': () => { state.targetHue = 0; state.targetSaturation = 95; state.chaos = 0.7; state.intensity = 0.9; },
-      'thought': () => { state.fractalType = 'tree'; state.fractalBranches = 2; state.complexity = 0.6; },
-      'thoughts': () => { state.fractalType = 'tree'; state.fractalBranches = 3; state.particleCount = 180; state.chaos = 0.25; },
-      'mind': () => { state.fractalDepth = 8; state.complexity = 0.85; state.fractalType = 'spiral'; },
-      'consciousness': () => { state.fractalDepth = 9; state.hasStars = true; state.brightness = 0.55; state.complexity = 1; state.hasLight = true; },
-      'awareness': () => { state.brightness = 0.6; state.hasLight = true; state.calm = 0.85; },
-      'presence': () => { state.calm = 1; state.brightness = 0.5; state.pulseSpeed = 0.008; },
-      'silence': () => { state.particleSpeed = 0; state.rotationSpeed = 0.00008; state.calm = 1; state.brightness = 0.2; },
-      'dream': () => { state.targetSaturation = 45; state.pulseSpeed = 0.006; state.targetHue = 280; state.chaos = 0.15; },
-      'dreams': () => { state.targetSaturation = 55; state.targetHue = 270; state.chaos = 0.2; state.fractalType = 'spiral'; },
-      'space': () => { state.hasStars = true; state.targetLightness = 1; state.particleCount = 280; state.hasNebula = true; },
-      'time': () => { state.rotationSpeed = 0.0018; state.fractalType = 'spiral'; state.complexity = 0.7; },
-      'eternity': () => { state.fractalDepth = 11; state.rotationSpeed = 0.0004; state.hasStars = true; },
-      'death': () => { state.targetLightness = 0; state.particleSpeed = 0; state.hasVoid = true; state.brightness = 0; state.particleCount = 0; },
-      'life': () => { state.targetHue = 120; state.targetSaturation = 60; state.particleSpeed = 0.75; state.brightness = 0.5; state.fractalType = 'tree'; },
-      'birth': () => { state.brightness = 0.85; state.hasLight = true; state.pulseSpeed = 0.025; },
-      'energy': () => { state.intensity = 0.9; state.particleSpeed = 1.4; state.brightness = 0.6; },
-      'soul': () => { state.targetHue = 280; state.brightness = 0.5; state.pulseSpeed = 0.012; state.hasLight = true; },
-      'spirit': () => { state.brightness = 0.55; state.particleCount = 120; state.targetHue = 200; state.hasLight = true; },
-      'god': () => { state.hasLight = true; state.brightness = 0.95; state.targetHue = 48; state.fractalDepth = 11; },
-      'divine': () => { state.hasLight = true; state.targetHue = 52; state.fractalType = 'mandala'; state.fractalBranches = 12; },
-      'holy': () => { state.hasLight = true; state.brightness = 0.7; state.targetHue = 50; state.hasGeometry = true; },
-      'mystery': () => { state.targetLightness = 6; state.targetHue = 270; state.chaos = 0.2; state.complexity = 0.75; },
-      'truth': () => { state.hasLight = true; state.brightness = 0.7; state.order = 0.9; state.calm = 0.85; },
-      'beauty': () => { state.targetSaturation = 65; state.brightness = 0.55; state.fractalType = 'mandala'; state.targetHue = 300; },
-      'self': () => { state.fractalType = 'mandala'; state.complexity = 0.85; state.pulseSpeed = 0.015; },
-      'observer': () => { state.hasLight = true; state.fractalDepth = 6; state.calm = 0.9; },
-      'observed': () => { state.complexity = 0.85; state.fractalDepth = 7; },
-      'one': () => { state.fractalDepth = 1; state.particleCount = 1; state.brightness = 0.8; state.hasLight = true; },
-      'unity': () => { state.fractalType = 'mandala'; state.order = 1; state.brightness = 0.6; },
-      'wholeness': () => { state.fractalType = 'mandala'; state.fractalBranches = 8; state.order = 1; state.complexity = 0.9; }
+      // Palettes
+      'purple': () => { state.paletteIndex = 0; updatePalette(); },
+      'violet': () => { state.paletteIndex = 0; updatePalette(); },
+      'ocean': () => { state.paletteIndex = 1; updatePalette(); },
+      'water': () => { state.paletteIndex = 1; updatePalette(); state.waveAmplitude = 0.3; },
+      'fire': () => { state.paletteIndex = 2; updatePalette(); state.turbulence = 0.3; },
+      'flame': () => { state.paletteIndex = 2; updatePalette(); state.turbulence = 0.4; },
+      'neon': () => { state.paletteIndex = 3; updatePalette(); state.glowIntensity = 0.5; },
+      'cyber': () => { state.paletteIndex = 3; updatePalette(); state.glowIntensity = 0.6; },
+      'aurora': () => { state.paletteIndex = 4; updatePalette(); state.waveAmplitude = 0.2; },
+      'cosmic': () => { state.paletteIndex = 5; updatePalette(); state.particleCount = 1500; },
+      'cosmos': () => { state.paletteIndex = 5; updatePalette(); state.particleCount = 2000; },
+      'universe': () => { state.paletteIndex = 5; updatePalette(); state.particleCount = 2500; },
+      'white': () => { state.paletteIndex = 6; updatePalette(); },
+      'monochrome': () => { state.paletteIndex = 6; updatePalette(); },
+      'gold': () => { state.paletteIndex = 7; updatePalette(); state.glowIntensity = 0.3; },
+      'golden': () => { state.paletteIndex = 7; updatePalette(); state.glowIntensity = 0.4; },
+      'forest': () => { state.paletteIndex = 8; updatePalette(); },
+      'nature': () => { state.paletteIndex = 8; updatePalette(); },
+      'blood': () => { state.paletteIndex = 9; updatePalette(); },
+      'red': () => { state.paletteIndex = 9; updatePalette(); },
+
+      // Modes
+      'flow': () => { state.modeIndex = 0; updateMode(); },
+      'attract': () => { state.modeIndex = 1; updateMode(); state.mouseStrength = 2; },
+      'pull': () => { state.modeIndex = 1; updateMode(); },
+      'repel': () => { state.modeIndex = 2; updateMode(); state.mouseStrength = 2; },
+      'push': () => { state.modeIndex = 2; updateMode(); },
+      'vortex': () => { state.modeIndex = 3; updateMode(); },
+      'spiral': () => { state.modeIndex = 3; updateMode(); state.flowStrength = 0.8; },
+      'orbit': () => { state.modeIndex = 4; updateMode(); },
+      'circle': () => { state.modeIndex = 4; updateMode(); },
+      'explode': () => { state.modeIndex = 5; updateMode(); state.particleSpeed = 2; },
+      'burst': () => { state.modeIndex = 5; updateMode(); },
+
+      // Particle count
+      'more': () => { state.particleCount = Math.min(state.particleCount + 500, 5000); },
+      'many': () => { state.particleCount = 2000; },
+      'infinite': () => { state.particleCount = 4000; },
+      'few': () => { state.particleCount = 200; },
+      'less': () => { state.particleCount = Math.max(state.particleCount - 500, 100); },
+      'empty': () => { state.particleCount = 50; state.trailAlpha = 0.02; },
+      'void': () => { state.particleCount = 10; state.backgroundColor = [0,0,0]; },
+      'nothing': () => { state.particleCount = 0; },
+
+      // Speed
+      'fast': () => { state.particleSpeed = 3; state.flowStrength = 1; },
+      'slow': () => { state.particleSpeed = 0.3; state.flowStrength = 0.2; },
+      'frozen': () => { state.particleSpeed = 0; },
+      'still': () => { state.particleSpeed = 0.1; state.flowStrength = 0.1; },
+      'calm': () => { state.particleSpeed = 0.4; state.turbulence = 0; },
+      'peace': () => { state.particleSpeed = 0.3; state.turbulence = 0; state.trailAlpha = 0.03; },
+      'chaos': () => { state.turbulence = 0.5; state.particleSpeed = 2; },
+      'storm': () => { state.turbulence = 0.6; state.particleSpeed = 2.5; },
+      'gentle': () => { state.particleSpeed = 0.5; state.flowStrength = 0.3; },
+
+      // Trails
+      'trails': () => { state.trailAlpha = 0.02; },
+      'streaks': () => { state.trailAlpha = 0.01; },
+      'fade': () => { state.trailAlpha = 0.15; },
+      'clear': () => { state.trailAlpha = 0.3; },
+      'ghost': () => { state.trailAlpha = 0.008; },
+
+      // Visual effects
+      'glow': () => { state.glowIntensity = 0.6; },
+      'bright': () => { state.glowIntensity = 0.8; state.backgroundColor = [15,15,20]; },
+      'dark': () => { state.backgroundColor = [2,2,5]; state.glowIntensity = 0; },
+      'darkness': () => { state.backgroundColor = [0,0,0]; },
+      'light': () => { state.backgroundColor = [20,20,30]; state.glowIntensity = 0.5; },
+
+      // Patterns
+      'symmetry': () => { state.symmetry = 2; },
+      'mirror': () => { state.symmetry = 2; },
+      'kaleidoscope': () => { state.symmetry = 6; },
+      'mandala': () => { state.symmetry = 8; state.modeIndex = 4; updateMode(); },
+      'radial': () => { state.symmetry = 4; },
+
+      // Concepts
+      'consciousness': () => { state.particleCount = 2000; state.glowIntensity = 0.4; state.paletteIndex = 5; updatePalette(); },
+      'awareness': () => { state.glowIntensity = 0.5; state.trailAlpha = 0.03; },
+      'thought': () => { state.modeIndex = 3; updateMode(); state.turbulence = 0.2; },
+      'mind': () => { state.particleCount = 1500; state.modeIndex = 3; updateMode(); },
+      'dream': () => { state.trailAlpha = 0.015; state.particleSpeed = 0.6; state.paletteIndex = 0; updatePalette(); },
+      'love': () => { state.paletteIndex = 2; updatePalette(); state.modeIndex = 1; updateMode(); state.glowIntensity = 0.5; },
+      'energy': () => { state.particleSpeed = 2; state.paletteIndex = 3; updatePalette(); },
+      'life': () => { state.paletteIndex = 8; updatePalette(); state.particleCount = 1500; },
+      'death': () => { state.paletteIndex = 6; updatePalette(); state.particleSpeed = 0.2; state.trailAlpha = 0.01; },
+      'birth': () => { state.modeIndex = 5; updateMode(); state.glowIntensity = 0.7; },
+      'stars': () => { state.particleCount = 2000; state.trailAlpha = 0.02; state.backgroundColor = [2,2,8]; },
+      'galaxy': () => { state.modeIndex = 3; updateMode(); state.particleCount = 2500; state.paletteIndex = 5; updatePalette(); },
+      'nebula': () => { state.trailAlpha = 0.01; state.glowIntensity = 0.4; state.paletteIndex = 5; updatePalette(); },
+      'breath': () => { state.waveAmplitude = 0.3; state.particleSpeed = 0.5; },
+      'heartbeat': () => { state.waveAmplitude = 0.5; },
+      'pulse': () => { state.waveAmplitude = 0.4; },
+      'wave': () => { state.waveAmplitude = 0.3; state.paletteIndex = 1; updatePalette(); },
+      'dance': () => { state.turbulence = 0.3; state.particleSpeed = 1.5; },
+      'music': () => { state.turbulence = 0.25; state.waveAmplitude = 0.2; },
+      'silence': () => { state.particleSpeed = 0.2; state.turbulence = 0; state.trailAlpha = 0.02; },
+      'truth': () => { state.paletteIndex = 6; updatePalette(); state.glowIntensity = 0.6; },
+      'beauty': () => { state.paletteIndex = 4; updatePalette(); state.glowIntensity = 0.4; },
+      'infinity': () => { state.modeIndex = 4; updateMode(); state.particleCount = 3000; },
+      'eternity': () => { state.trailAlpha = 0.005; state.particleCount = 2000; }
     };
 
-    // Init
+    // Noise function
+    function noise(x, y, z) {
+      const n = Math.sin(x * 0.5 + z) * Math.cos(y * 0.5 + z) +
+                Math.sin(x * 0.3 - z * 0.5) * Math.cos(y * 0.3) +
+                Math.sin(x * 0.7 + y * 0.7 + z * 2) * 0.5;
+      return (n + 2) / 4;
+    }
+
+    class Particle {
+      constructor() { this.reset(); }
+      
+      reset() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.vx = 0;
+        this.vy = 0;
+        this.life = Math.random() * 200 + 100;
+        this.maxLife = this.life;
+        this.colorIndex = Math.floor(Math.random() * palettes[state.paletteIndex].length);
+      }
+      
+      update() {
+        const col = Math.floor(this.x / scale);
+        const row = Math.floor(this.y / scale);
+        const index = col + row * cols;
+        
+        if (flowField[index] !== undefined) {
+          const force = flowField[index];
+          this.vx += Math.cos(force) * state.flowStrength;
+          this.vy += Math.sin(force) * state.flowStrength;
+        }
+
+        // Turbulence
+        if (state.turbulence > 0) {
+          this.vx += (Math.random() - 0.5) * state.turbulence;
+          this.vy += (Math.random() - 0.5) * state.turbulence;
+        }
+        
+        // Mouse influence
+        const dx = mouseX - this.x;
+        const dy = mouseY - this.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const influence = Math.min(200 / (dist + 1), 4) * mouseInfluence * state.mouseStrength;
+        
+        switch(modes[state.modeIndex]) {
+          case 'attract':
+            this.vx += (dx / dist) * influence * 0.3;
+            this.vy += (dy / dist) * influence * 0.3;
+            break;
+          case 'repel':
+            this.vx -= (dx / dist) * influence * 0.5;
+            this.vy -= (dy / dist) * influence * 0.5;
+            break;
+          case 'vortex':
+            this.vx += (-dy / dist) * influence * 0.3;
+            this.vy += (dx / dist) * influence * 0.3;
+            break;
+          case 'orbit':
+            const angle = Math.atan2(dy, dx);
+            this.vx += Math.cos(angle + Math.PI/2) * influence * 0.2;
+            this.vy += Math.sin(angle + Math.PI/2) * influence * 0.2;
+            break;
+          case 'explode':
+            if (dist < 200) {
+              this.vx -= (dx / dist) * influence * 0.8;
+              this.vy -= (dy / dist) * influence * 0.8;
+            }
+            break;
+          default:
+            this.vx += (dx / dist) * influence * 0.1;
+            this.vy += (dy / dist) * influence * 0.1;
+        }
+        
+        this.x += this.vx * state.particleSpeed;
+        this.y += this.vy * state.particleSpeed;
+        this.vx *= 0.98;
+        this.vy *= 0.98;
+        
+        const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+        if (speed > 5) {
+          this.vx = (this.vx / speed) * 5;
+          this.vy = (this.vy / speed) * 5;
+        }
+        
+        this.life--;
+        
+        if (this.x < 0) this.x = width;
+        if (this.x > width) this.x = 0;
+        if (this.y < 0) this.y = height;
+        if (this.y > height) this.y = 0;
+        
+        if (this.life <= 0) this.reset();
+      }
+      
+      draw() {
+        const alpha = Math.min(this.life / 50, 1) * Math.min((this.maxLife - this.life) / 20, 1);
+        const color = palettes[state.paletteIndex][this.colorIndex % palettes[state.paletteIndex].length];
+        
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.globalAlpha = alpha * 0.8;
+        ctx.fill();
+        
+        // Trail
+        ctx.beginPath();
+        ctx.moveTo(this.x, this.y);
+        ctx.lineTo(this.x - this.vx * 4, this.y - this.vy * 4);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1;
+        ctx.globalAlpha = alpha * 0.4;
+        ctx.stroke();
+
+        // Glow effect
+        if (state.glowIntensity > 0) {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, 4, 0, Math.PI * 2);
+          ctx.fillStyle = color;
+          ctx.globalAlpha = alpha * state.glowIntensity * 0.2;
+          ctx.fill();
+        }
+      }
+    }
+
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+      cols = Math.floor(width / scale) + 1;
+      rows = Math.floor(height / scale) + 1;
+      flowField = new Array(cols * rows);
+    }
+
+    function updatePalette() {
+      paletteIndicator.innerHTML = palettes[state.paletteIndex]
+        .map(c => `<div class="color-dot" style="background:${c}"></div>`)
+        .join('');
+    }
+
+    function updateMode() {
+      modeIndicator.textContent = modes[state.modeIndex];
+    }
+
+    function initParticles() {
+      const targetCount = Math.min(state.particleCount, 5000);
+      while (particles.length < targetCount) particles.push(new Particle());
+      while (particles.length > targetCount) particles.pop();
+    }
+
+    function updateFlowField() {
+      const waveOffset = state.waveAmplitude > 0 ? Math.sin(zoff * 2) * state.waveAmplitude : 0;
+      for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) {
+          const index = x + y * cols;
+          const angle = noise(x * 0.1, y * 0.1, zoff) * Math.PI * 4 + waveOffset;
+          flowField[index] = angle;
+        }
+      }
+      zoff += 0.003;
+    }
+
     function init() {
       resize();
-      window.addEventListener('resize', resize);
-      intro.addEventListener('click', startExperience);
-      intro.addEventListener('touchstart', startExperience);
-      input.addEventListener('input', handleInput);
       initParticles();
-      animate();
+      updatePalette();
+      updateMode();
     }
 
     function startExperience() {
@@ -620,50 +550,16 @@
       started = true;
       intro.classList.add('hidden');
       
-      // Apply random initial animation from curated keywords
-      const startingKeywords = [
-        'cosmos', 'spiral', 'mandala', 'stars', 'nebula', 'galaxy',
-        'fractal', 'tree', 'flow', 'dream', 'consciousness', 'infinity',
-        'gold', 'violet', 'aurora', 'dance', 'breath', 'mystery',
-        'sacred', 'lotus', 'ocean', 'fire', 'energy', 'spirit'
-      ];
+      // Random starting keyword
+      const startingKeywords = ['cosmos', 'spiral', 'aurora', 'dream', 'flow', 'nebula', 'gentle'];
       const randomKeyword = startingKeywords[Math.floor(Math.random() * startingKeywords.length)];
-      if (keywords[randomKeyword]) {
-        keywords[randomKeyword]();
-        // Update particles for new state
-        while (particles.length < state.particleCount) {
-          particles.push(createParticle());
-        }
-      }
+      if (keywords[randomKeyword]) keywords[randomKeyword]();
+      initParticles();
       
       setTimeout(() => {
         interfaceEl.classList.add('visible');
         input.focus();
       }, 500);
-    }
-
-    function resize() {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-    }
-
-    function initParticles() {
-      particles = [];
-      for (let i = 0; i < state.particleCount; i++) {
-        particles.push(createParticle());
-      }
-    }
-
-    function createParticle() {
-      return {
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: (Math.random() - 0.5) * state.particleSpeed,
-        vy: (Math.random() - 0.5) * state.particleSpeed,
-        size: Math.random() * state.particleSize + 0.3,
-        alpha: Math.random() * 0.5 + 0.15,
-        hueOffset: Math.random() * 40 - 20
-      };
     }
 
     function handleInput(e) {
@@ -676,53 +572,26 @@
           keywords[cleanWord]();
           allWords.push(cleanWord);
           showWordEcho(cleanWord);
-          addToHistory(cleanWord);
+          initParticles();
         }
       }
       
-      // Update particles
-      while (particles.length < state.particleCount) {
-        particles.push(createParticle());
-      }
-      while (particles.length > state.particleCount && particles.length > 0) {
-        particles.pop();
-      }
-      
-      if (text.length > 0) {
-        question.classList.add('faded');
-      } else {
-        question.classList.remove('faded');
-      }
-      
+      question.classList.toggle('faded', text.length > 0);
       lastInputTime = Date.now();
       
       if (allWords.length >= 5 && !revealTriggered) {
-        setTimeout(checkForReveal, 10000);
+        setTimeout(checkForReveal, 12000);
       }
     }
 
     function showWordEcho(word) {
       wordEcho.textContent = word;
       wordEcho.classList.add('visible');
-      setTimeout(() => {
-        wordEcho.classList.remove('visible');
-      }, 2500);
-    }
-
-    function addToHistory(word) {
-      const span = document.createElement('span');
-      span.className = 'word';
-      span.textContent = word;
-      wordHistory.appendChild(span);
-      
-      // Limit history display
-      while (wordHistory.children.length > 15) {
-        wordHistory.removeChild(wordHistory.firstChild);
-      }
+      setTimeout(() => wordEcho.classList.remove('visible'), 2500);
     }
 
     function checkForReveal() {
-      if (Date.now() - lastInputTime > 9000 && allWords.length >= 5 && !revealTriggered) {
+      if (Date.now() - lastInputTime > 10000 && allWords.length >= 5 && !revealTriggered) {
         triggerReveal();
       }
     }
@@ -730,9 +599,7 @@
     function triggerReveal() {
       revealTriggered = true;
       allWordsSpan.textContent = allWords.join(' · ');
-      setTimeout(() => {
-        reveal.classList.add('visible');
-      }, 1500);
+      setTimeout(() => reveal.classList.add('visible'), 1500);
     }
 
     function restart() {
@@ -741,389 +608,73 @@
       allWords = [];
       input.value = '';
       question.classList.remove('faded');
-      wordHistory.innerHTML = '';
       
-      // Reset state
       state = {
-        hue: 240, saturation: 15, lightness: 5,
-        targetHue: 240, targetSaturation: 15, targetLightness: 5,
-        fractalDepth: 3, fractalScale: 0.5, fractalRotation: 0,
-        fractalBranches: 2, fractalType: 'tree',
-        particleCount: 60, particleSpeed: 0.2, particleSize: 1.5,
-        globalRotation: 0, rotationSpeed: 0.0003,
-        pulse: 0, pulseSpeed: 0.008,
-        chaos: 0, order: 0.5, brightness: 0.25, complexity: 0.3,
-        hasStars: false, hasWater: false, hasFire: false,
-        hasVoid: true, hasLight: false, hasGeometry: false, hasNebula: false,
-        calm: 0.5, intensity: 0.2,
-        currentBrightness: 0.25, currentComplexity: 0.3
+        paletteIndex: 0, modeIndex: 0, particleCount: 800,
+        trailAlpha: 0.05, particleSpeed: 1, flowStrength: 0.5,
+        turbulence: 0.1, mouseStrength: 1, backgroundColor: [10, 10, 15],
+        glowIntensity: 0, symmetry: 1, waveAmplitude: 0
       };
       
-      initParticles();
+      particles = [];
+      init();
       input.focus();
     }
 
-    // ============================================
-    // ANIMATION
-    // ============================================
-
     function animate() {
-      time++;
-      
-      // Smooth transitions
-      state.hue += (state.targetHue - state.hue) * 0.02;
-      state.saturation += (state.targetSaturation - state.saturation) * 0.02;
-      state.lightness += (state.targetLightness - state.lightness) * 0.02;
-      state.currentBrightness += (state.brightness - state.currentBrightness) * 0.03;
-      state.currentComplexity += (state.complexity - state.currentComplexity) * 0.02;
-      
-      state.globalRotation += state.rotationSpeed;
-      state.pulse += state.pulseSpeed;
-      
-      // Clear
-      const bgL = state.lightness;
-      ctx.fillStyle = `hsl(${state.hue}, ${state.saturation}%, ${bgL}%)`;
-      ctx.globalAlpha = 0.08;
+      // Background with trail effect
+      const [r, g, b] = state.backgroundColor;
+      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${state.trailAlpha})`;
       ctx.fillRect(0, 0, width, height);
       ctx.globalAlpha = 1;
       
-      // Draw layers
-      if (state.hasNebula) drawNebula();
-      if (state.hasStars) drawStars();
-      if (state.hasWater) drawWater();
-      if (state.hasFire) drawFire();
-      if (state.hasVoid) drawVoid();
+      updateFlowField();
       
-      drawFractal();
-      updateAndDrawParticles();
-      
-      if (state.hasLight) drawLight();
-      
-      animationId = requestAnimationFrame(animate);
-    }
-
-    function drawFractal() {
-      const centerX = width / 2;
-      const centerY = height / 2;
-      const baseSize = Math.min(width, height) * 0.28 * state.fractalScale;
-      
-      ctx.save();
-      ctx.translate(centerX, centerY);
-      ctx.rotate(state.globalRotation);
-      
-      switch (state.fractalType) {
-        case 'tree':
-          drawFractalTree(0, 0, baseSize, -Math.PI / 2, state.fractalDepth);
-          break;
-        case 'spiral':
-          drawFractalSpiral(0, 0, baseSize, state.fractalDepth);
-          break;
-        case 'mandala':
-          drawMandala(0, 0, baseSize, state.fractalDepth);
-          break;
-        case 'sierpinski':
-          drawSierpinski(0, -baseSize/2, baseSize, state.fractalDepth);
-          break;
-        case 'julia':
-          drawJulia(centerX, centerY, baseSize);
-          break;
-      }
-      
-      ctx.restore();
-    }
-
-    function drawFractalTree(x, y, length, angle, depth) {
-      if (depth === 0 || length < 1.5) return;
-      
-      const endX = x + Math.cos(angle) * length;
-      const endY = y + Math.sin(angle) * length;
-      
-      const alpha = (depth / state.fractalDepth) * state.currentBrightness * 0.9;
-      const hue = (state.hue + depth * 12 + time * 0.1) % 360;
-      
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(endX, endY);
-      ctx.strokeStyle = `hsla(${hue}, ${state.saturation}%, ${45 + state.lightness}%, ${alpha})`;
-      ctx.lineWidth = Math.max(0.5, depth * 0.4);
-      ctx.stroke();
-      
-      const branchAngle = Math.PI / (4 + state.chaos * 2.5);
-      const lengthRatio = 0.68 + state.chaos * 0.12 * (Math.random() - 0.5);
-      
-      for (let i = 0; i < state.fractalBranches; i++) {
-        const spreadAngle = branchAngle * (i - (state.fractalBranches - 1) / 2);
-        const chaosAngle = state.chaos * 0.2 * (Math.random() - 0.5);
-        drawFractalTree(endX, endY, length * lengthRatio, angle + spreadAngle + chaosAngle, depth - 1);
-      }
-    }
-
-    function drawFractalSpiral(x, y, size, depth) {
-      if (depth === 0) return;
-      
-      const points = 120;
-      const rotations = 3 + state.currentComplexity * 4;
-      
-      ctx.beginPath();
-      for (let i = 0; i <= points; i++) {
-        const t = i / points;
-        const angle = t * Math.PI * 2 * rotations + state.globalRotation * 6;
-        const r = t * size * (1 + Math.sin(state.pulse) * 0.08);
-        const px = x + Math.cos(angle) * r;
-        const py = y + Math.sin(angle) * r;
-        
-        if (i === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-      }
-      
-      const hue = (state.hue + depth * 25) % 360;
-      ctx.strokeStyle = `hsla(${hue}, ${state.saturation}%, ${38 + state.currentBrightness * 35}%, ${state.currentBrightness * 0.8})`;
-      ctx.lineWidth = 1 + state.currentComplexity * 0.8;
-      ctx.stroke();
-      
-      if (depth > 1) {
-        const newSize = size * 0.45;
-        const offset = size * 0.55;
-        for (let i = 0; i < 3; i++) {
-          const angle = (i / 3) * Math.PI * 2 + state.globalRotation;
-          drawFractalSpiral(
-            x + Math.cos(angle) * offset,
-            y + Math.sin(angle) * offset,
-            newSize,
-            depth - 1
-          );
-        }
-      }
-    }
-
-    function drawMandala(x, y, size, depth) {
-      if (depth === 0) return;
-      
-      const petals = state.fractalBranches;
-      const pulseSize = size * (1 + Math.sin(state.pulse) * 0.04);
-      
-      for (let i = 0; i < petals; i++) {
-        const angle = (i / petals) * Math.PI * 2;
-        const hue = (state.hue + i * (360 / petals)) % 360;
-        
-        ctx.save();
-        ctx.rotate(angle);
-        
-        // Petal
-        ctx.beginPath();
-        ctx.ellipse(0, pulseSize * 0.45, pulseSize * 0.12, pulseSize * 0.38, 0, 0, Math.PI * 2);
-        ctx.strokeStyle = `hsla(${hue}, ${state.saturation}%, ${48}%, ${state.currentBrightness * 0.75})`;
-        ctx.lineWidth = 1;
-        ctx.stroke();
-        
-        if (depth > 2) {
-          ctx.beginPath();
-          ctx.ellipse(0, pulseSize * 0.28, pulseSize * 0.06, pulseSize * 0.18, 0, 0, Math.PI * 2);
-          ctx.strokeStyle = `hsla(${hue}, ${state.saturation}%, ${58}%, ${state.currentBrightness * 0.45})`;
-          ctx.stroke();
-        }
-        
-        ctx.restore();
-      }
-      
-      // Center
-      ctx.beginPath();
-      ctx.arc(x, y, pulseSize * 0.12, 0, Math.PI * 2);
-      ctx.strokeStyle = `hsla(${state.hue}, ${state.saturation}%, ${58}%, ${state.currentBrightness})`;
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-      
-      if (depth > 1) {
-        drawMandala(x, y, size * 0.45, depth - 1);
-      }
-    }
-
-    function drawSierpinski(x, y, size, depth) {
-      if (depth === 0) {
-        const h = size * Math.sqrt(3) / 2;
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        ctx.lineTo(x - size / 2, y + h);
-        ctx.lineTo(x + size / 2, y + h);
-        ctx.closePath();
-        
-        const hue = (state.hue + (state.fractalDepth - depth) * 35) % 360;
-        ctx.strokeStyle = `hsla(${hue}, ${state.saturation}%, ${48}%, ${state.currentBrightness})`;
-        ctx.lineWidth = 0.8;
-        ctx.stroke();
-        return;
-      }
-      
-      const h = size * Math.sqrt(3) / 2;
-      const newSize = size / 2;
-      
-      drawSierpinski(x, y, newSize, depth - 1);
-      drawSierpinski(x - newSize / 2, y + h / 2, newSize, depth - 1);
-      drawSierpinski(x + newSize / 2, y + h / 2, newSize, depth - 1);
-    }
-
-    function drawJulia(centerX, centerY, size) {
-      const scale = size / 150;
-      const iterations = Math.min(state.fractalDepth, 80);
-      const cReal = -0.7 + Math.sin(time * 0.002) * 0.1;
-      const cImag = 0.27015 + Math.cos(time * 0.002) * 0.05;
-      
-      const step = 3;
-      for (let px = 0; px < width; px += step) {
-        for (let py = 0; py < height; py += step) {
-          let x = (px - centerX) / (size * 1.5);
-          let y = (py - centerY) / (size * 1.5);
-          
-          let i = 0;
-          while (x * x + y * y < 4 && i < iterations) {
-            const xNew = x * x - y * y + cReal;
-            y = 2 * x * y + cImag;
-            x = xNew;
-            i++;
-          }
-          
-          if (i < iterations) {
-            const hue = (state.hue + i * 8) % 360;
-            const lightness = 30 + (i / iterations) * 40;
-            ctx.fillStyle = `hsla(${hue}, ${state.saturation}%, ${lightness}%, ${state.currentBrightness * 0.7})`;
-            ctx.fillRect(px, py, step, step);
-          }
-        }
-      }
-    }
-
-    function updateAndDrawParticles() {
+      // Update particles
+      initParticles();
       for (const p of particles) {
-        p.x += p.vx * (1 + state.chaos * 0.8);
-        p.y += p.vy * (1 + state.chaos * 0.8);
-        
-        if (state.chaos > 0) {
-          p.vx += (Math.random() - 0.5) * state.chaos * 0.08;
-          p.vy += (Math.random() - 0.5) * state.chaos * 0.08;
-        }
-        
-        if (p.x < 0) p.x = width;
-        if (p.x > width) p.x = 0;
-        if (p.y < 0) p.y = height;
-        if (p.y > height) p.y = 0;
-        
-        const hue = (state.hue + p.hueOffset) % 360;
-        const size = p.size * (1 + Math.sin(state.pulse + p.x * 0.008) * 0.25);
-        
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
-        ctx.fillStyle = `hsla(${hue}, ${state.saturation}%, ${55}%, ${p.alpha * state.currentBrightness})`;
-        ctx.fill();
+        p.update();
+        p.draw();
       }
-    }
-
-    function drawStars() {
-      for (let i = 0; i < 80; i++) {
-        const x = (Math.sin(i * 567.89 + state.pulse * 0.08) + 1) * width / 2;
-        const y = (Math.cos(i * 123.45 + state.pulse * 0.04) + 1) * height / 2;
-        const twinkle = Math.sin(state.pulse * 2.5 + i) * 0.5 + 0.5;
-        
-        ctx.beginPath();
-        ctx.arc(x, y, 0.8 + twinkle * 1.2, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 255, 255, ${twinkle * 0.85})`;
-        ctx.fill();
-      }
-    }
-
-    function drawNebula() {
-      for (let i = 0; i < 3; i++) {
-        const x = width / 2 + Math.sin(time * 0.001 + i * 2) * width * 0.25;
-        const y = height / 2 + Math.cos(time * 0.0015 + i * 2) * height * 0.2;
-        const radius = Math.min(width, height) * (0.2 + i * 0.08);
-        
-        const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
-        const hue = (state.hue + i * 40) % 360;
-        gradient.addColorStop(0, `hsla(${hue}, 60%, 40%, ${0.04 * state.currentBrightness})`);
-        gradient.addColorStop(0.5, `hsla(${hue + 20}, 50%, 30%, ${0.02 * state.currentBrightness})`);
-        gradient.addColorStop(1, 'transparent');
-        
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, width, height);
-      }
-    }
-
-    function drawWater() {
-      const waves = 6;
-      for (let w = 0; w < waves; w++) {
-        ctx.beginPath();
-        for (let x = 0; x <= width; x += 8) {
-          const y = height * 0.72 + 
-                    Math.sin(x * 0.018 + state.pulse + w) * 18 +
-                    Math.sin(x * 0.008 + state.pulse * 0.5) * 28 +
-                    w * 12;
-          if (x === 0) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
-        }
-        ctx.strokeStyle = `hsla(${state.hue}, ${state.saturation}%, ${38 + w * 5}%, ${0.28 - w * 0.04})`;
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-      }
-    }
-
-    function drawFire() {
-      for (let i = 0; i < 25; i++) {
-        const x = width / 2 + (Math.random() - 0.5) * 180;
-        const baseY = height * 0.82;
-        const flameHeight = 80 + Math.random() * 140;
-        
-        const gradient = ctx.createLinearGradient(x, baseY, x, baseY - flameHeight);
-        gradient.addColorStop(0, `hsla(${state.hue}, 100%, 50%, 0.75)`);
-        gradient.addColorStop(0.4, `hsla(${state.hue + 20}, 100%, 60%, 0.4)`);
-        gradient.addColorStop(1, 'transparent');
-        
-        ctx.beginPath();
-        ctx.moveTo(x - 8, baseY);
-        ctx.quadraticCurveTo(
-          x + Math.sin(state.pulse * 3.5 + i) * 18,
-          baseY - flameHeight / 2,
-          x + Math.sin(state.pulse * 5 + i) * 8,
-          baseY - flameHeight
-        );
-        ctx.quadraticCurveTo(
-          x + Math.sin(state.pulse * 4.5 + i) * 12,
-          baseY - flameHeight / 2,
-          x + 8,
-          baseY
-        );
-        ctx.fillStyle = gradient;
-        ctx.fill();
-      }
-    }
-
-    function drawVoid() {
-      const gradient = ctx.createRadialGradient(
-        width / 2, height / 2, 0,
-        width / 2, height / 2, Math.max(width, height) * 0.65
-      );
-      gradient.addColorStop(0, 'transparent');
-      gradient.addColorStop(1, `hsla(${state.hue}, ${state.saturation}%, 0%, 0.25)`);
       
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, width, height);
+      // FPS
+      frameCount++;
+      const now = performance.now();
+      if (now - lastTime >= 1000) {
+        fps = frameCount;
+        frameCount = 0;
+        lastTime = now;
+      }
+      
+      document.getElementById('particle-count').textContent = `${particles.length} particles`;
+      document.getElementById('fps-display').textContent = `${fps} fps`;
+      
+      mouseInfluence *= 0.95;
+      requestAnimationFrame(animate);
     }
 
-    function drawLight() {
-      const gradient = ctx.createRadialGradient(
-        width / 2, height / 2, 0,
-        width / 2, height / 2, Math.min(width, height) * 0.45
-      );
-      
-      const pulseIntensity = 0.08 + Math.sin(state.pulse) * 0.04;
-      gradient.addColorStop(0, `hsla(${state.hue}, 25%, 92%, ${pulseIntensity * state.currentBrightness})`);
-      gradient.addColorStop(0.4, `hsla(${state.hue}, 35%, 75%, ${pulseIntensity * 0.5 * state.currentBrightness})`);
-      gradient.addColorStop(1, 'transparent');
-      
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, width, height);
-    }
+    // Event listeners
+    window.addEventListener('resize', resize);
+    intro.addEventListener('click', startExperience);
+    intro.addEventListener('touchstart', startExperience);
+    input.addEventListener('input', handleInput);
+    
+    canvas.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      mouseInfluence = 1;
+    });
+    
+    canvas.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      mouseX = e.touches[0].clientX;
+      mouseY = e.touches[0].clientY;
+      mouseInfluence = 1;
+    }, { passive: false });
 
     // Start
     init();
+    animate();
   </script>
 </body>
 </html>
