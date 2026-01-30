@@ -438,6 +438,8 @@
       hasLight: false,
       hasGeometry: false,
       hasNebula: false,
+      hasBreathing: false,
+      breathPhase: 0,
       
       calm: 0.5,
       intensity: 0.2,
@@ -551,8 +553,8 @@
       'spinning': () => { state.rotationSpeed = 0.012; },
       'dance': () => { state.rotationSpeed = 0.004; state.pulseSpeed = 0.025; state.chaos = 0.25; },
       'dancing': () => { state.rotationSpeed = 0.005; state.pulseSpeed = 0.035; },
-      'breathe': () => { state.pulseSpeed = 0.012; state.calm = 0.85; },
-      'breathing': () => { state.pulseSpeed = 0.018; state.calm = 0.75; },
+      'breathe': () => { state.pulseSpeed = 0.012; state.calm = 0.85; state.hasBreathing = true; },
+      'breathing': () => { state.pulseSpeed = 0.018; state.calm = 0.75; state.hasBreathing = true; },
       'pulse': () => { state.pulseSpeed = 0.025; },
       'pulsing': () => { state.pulseSpeed = 0.035; state.intensity = 0.55; },
       'vibrate': () => { state.chaos = 0.4; state.pulseSpeed = 0.04; },
@@ -798,6 +800,7 @@
       updateAndDrawParticles();
       
       if (state.hasLight) drawLight();
+      if (state.hasBreathing) drawBreathingGuide();
       
       animationId = requestAnimationFrame(animate);
     }
@@ -1105,6 +1108,45 @@
       
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, width, height);
+    }
+
+    function drawBreathingGuide() {
+      // 4-7-8 breathing: 4s inhale, 7s hold, 8s exhale (19s cycle)
+      const cycleTime = 19000;
+      const t = (Date.now() % cycleTime) / cycleTime;
+      
+      let phase, size, alpha;
+      if (t < 4/19) { // Inhale
+        phase = t / (4/19);
+        size = 0.3 + phase * 0.7;
+        alpha = 0.15 + phase * 0.1;
+      } else if (t < 11/19) { // Hold
+        size = 1;
+        alpha = 0.25;
+      } else { // Exhale
+        phase = (t - 11/19) / (8/19);
+        size = 1 - phase * 0.7;
+        alpha = 0.25 - phase * 0.15;
+      }
+      
+      const maxRadius = Math.min(width, height) * 0.15;
+      const radius = maxRadius * size;
+      
+      ctx.beginPath();
+      ctx.arc(width / 2, height / 2, radius, 0, Math.PI * 2);
+      ctx.strokeStyle = `hsla(${state.hue}, 30%, 70%, ${alpha})`;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      
+      // Inner glow
+      const gradient = ctx.createRadialGradient(
+        width / 2, height / 2, 0,
+        width / 2, height / 2, radius
+      );
+      gradient.addColorStop(0, `hsla(${state.hue}, 30%, 70%, ${alpha * 0.3})`);
+      gradient.addColorStop(1, 'transparent');
+      ctx.fillStyle = gradient;
+      ctx.fill();
     }
 
     function drawLight() {
