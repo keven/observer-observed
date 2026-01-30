@@ -666,9 +666,33 @@
       };
     }
 
+    // Word combinations for special effects
+    const combos = {
+      'sacred geometry': () => { state.fractalType = 'mandala'; state.fractalBranches = 12; state.hasGeometry = true; state.targetHue = 50; state.brightness = 0.55; },
+      'deep space': () => { state.hasStars = true; state.hasNebula = true; state.targetLightness = 1; state.particleCount = 500; state.fractalType = 'spiral'; },
+      'inner peace': () => { state.calm = 1; state.chaos = 0; state.brightness = 0.4; state.rotationSpeed = 0; state.pulseSpeed = 0.005; },
+      'pure light': () => { state.hasLight = true; state.brightness = 0.9; state.targetLightness = 80; state.targetSaturation = 5; },
+      'total darkness': () => { state.targetLightness = 0; state.brightness = 0; state.particleCount = 0; state.hasVoid = true; },
+      'wild fire': () => { state.hasFire = true; state.chaos = 0.8; state.intensity = 1; state.particleSpeed = 2; },
+      'still water': () => { state.hasWater = true; state.calm = 1; state.particleSpeed = 0.05; state.rotationSpeed = 0; },
+      'eternal spiral': () => { state.fractalType = 'spiral'; state.fractalDepth = 12; state.rotationSpeed = 0.001; state.complexity = 1; },
+      'golden ratio': () => { state.fractalType = 'mandala'; state.fractalBranches = 8; state.targetHue = 45; state.brightness = 0.6; state.hasGeometry = true; },
+      'quantum field': () => { state.particleCount = 1000; state.chaos = 0.3; state.complexity = 1; state.hasStars = true; }
+    };
+
     function handleInput(e) {
       const text = e.target.value.toLowerCase();
       const words = text.split(/\s+/);
+      
+      // Check for word combinations first
+      for (const [combo, effect] of Object.entries(combos)) {
+        if (text.includes(combo) && !allWords.includes(combo)) {
+          effect();
+          allWords.push(combo);
+          showWordEcho(combo);
+          addToHistory(combo);
+        }
+      }
       
       for (const word of words) {
         const cleanWord = word.replace(/[^a-z]/g, '');
