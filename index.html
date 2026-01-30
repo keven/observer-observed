@@ -191,6 +191,26 @@
       opacity: 1;
     }
 
+    /* Krishnamurti Quotes */
+    #quote {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: clamp(1rem, 2vw, 1.3rem);
+      color: rgba(255, 255, 255, 0.4);
+      font-style: italic;
+      text-align: center;
+      max-width: 500px;
+      letter-spacing: 0.05em;
+      line-height: 1.8;
+      opacity: 0;
+      transition: opacity 3s ease;
+      pointer-events: none;
+      z-index: 5;
+    }
+    #quote.visible { opacity: 1; }
+
     /* Word History */
     #word-history {
       position: fixed;
@@ -360,6 +380,7 @@
 
   <!-- Word Echo -->
   <div id="word-echo"></div>
+  <div id="quote"></div>
 
   <!-- Reveal -->
   <div id="reveal">
@@ -448,6 +469,37 @@
     };
 
     let particles = [];
+
+    // Krishnamurti Quotes
+    const quotes = [
+      "The observer is the observed.",
+      "Truth is a pathless land.",
+      "The ability to observe without evaluating is the highest form of intelligence.",
+      "In the space between thoughts, there is freedom.",
+      "To understand the immeasurable, the mind must be still.",
+      "What you are, the world is.",
+      "The ending of sorrow is the beginning of wisdom.",
+      "Freedom is found in the choiceless awareness of our daily existence.",
+      "When you call yourself an Indian or a Muslim or a Christian, you are being violent.",
+      "The constant assertion of belief is an indication of fear."
+    ];
+    let lastQuoteTime = 0;
+    const quoteInterval = 45000; // 45 seconds
+
+    function showQuote() {
+      if (Date.now() - lastQuoteTime < quoteInterval) return;
+      if (revealTriggered) return;
+      
+      const quote = quotes[Math.floor(Math.random() * quotes.length)];
+      const quoteEl = document.getElementById('quote');
+      quoteEl.textContent = '"' + quote + '"';
+      quoteEl.classList.add('visible');
+      lastQuoteTime = Date.now();
+      
+      setTimeout(() => {
+        quoteEl.classList.remove('visible');
+      }, 8000);
+    }
 
     // Keywords
     const keywords = {
@@ -798,6 +850,9 @@
       updateAndDrawParticles();
       
       if (state.hasLight) drawLight();
+      
+      // Show occasional quote
+      if (started && time % 300 === 0) showQuote();
       
       animationId = requestAnimationFrame(animate);
     }
