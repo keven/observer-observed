@@ -619,6 +619,23 @@
       if (started) return;
       started = true;
       intro.classList.add('hidden');
+      
+      // Apply random initial animation from curated keywords
+      const startingKeywords = [
+        'cosmos', 'spiral', 'mandala', 'stars', 'nebula', 'galaxy',
+        'fractal', 'tree', 'flow', 'dream', 'consciousness', 'infinity',
+        'gold', 'violet', 'aurora', 'dance', 'breath', 'mystery',
+        'sacred', 'lotus', 'ocean', 'fire', 'energy', 'spirit'
+      ];
+      const randomKeyword = startingKeywords[Math.floor(Math.random() * startingKeywords.length)];
+      if (keywords[randomKeyword]) {
+        keywords[randomKeyword]();
+        // Update particles for new state
+        while (particles.length < state.particleCount) {
+          particles.push(createParticle());
+        }
+      }
+      
       setTimeout(() => {
         interfaceEl.classList.add('visible');
         input.focus();
