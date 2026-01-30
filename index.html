@@ -461,30 +461,41 @@
       flowRows = Math.floor(height / flowScale) + 1;
       flowField = new Array(flowCols * flowRows);
       flowParticles = [];
-      const count = Math.floor((width * height) / 15000); // Very sparse
+      const count = Math.floor((width * height) / 8000); // More particles, spread out
       for (let i = 0; i < count; i++) {
+        // Distribute across entire canvas using grid + jitter for even spread
+        const gridX = (i % Math.ceil(Math.sqrt(count))) / Math.ceil(Math.sqrt(count));
+        const gridY = Math.floor(i / Math.ceil(Math.sqrt(count))) / Math.ceil(Math.sqrt(count));
         flowParticles.push({
-          x: Math.random() * width,
-          y: Math.random() * height,
+          x: (gridX + (Math.random() - 0.5) * 0.3) * width,
+          y: (gridY + (Math.random() - 0.5) * 0.3) * height,
           vx: 0, vy: 0,
           life: Math.random() * 300 + 200,
-          maxLife: 500
+          maxLife: 500,
+          offset: Math.random() * 1000 // Unique offset for varied movement
         });
       }
     }
 
     function flowNoise(x, y, z) {
-      return (Math.sin(x * 0.4 + z) * Math.cos(y * 0.4 + z * 0.7) +
-              Math.sin(x * 0.2 - z * 0.3) * Math.cos(y * 0.2) * 0.5 + 1.5) / 3;
+      // Multi-layered noise for more organic, spread-out movement
+      const n1 = Math.sin(x * 0.3 + z) * Math.cos(y * 0.3 + z * 0.5);
+      const n2 = Math.sin(x * 0.7 + y * 0.5 - z * 0.4) * 0.5;
+      const n3 = Math.cos(x * 0.15 - z * 0.2) * Math.sin(y * 0.15 + z * 0.3) * 0.3;
+      return (n1 + n2 + n3 + 2) / 4;
     }
 
     function updateFlowField() {
       for (let y = 0; y < flowRows; y++) {
         for (let x = 0; x < flowCols; x++) {
-          flowField[x + y * flowCols] = flowNoise(x * 0.08, y * 0.08, flowTime) * Math.PI * 2;
+          // Vary the flow direction across the whole canvas
+          const angle = flowNoise(x * 0.06, y * 0.06, flowTime) * Math.PI * 2;
+          // Add slight local variation
+          const localVar = Math.sin(x * 0.5 + y * 0.5 + flowTime * 2) * 0.3;
+          flowField[x + y * flowCols] = angle + localVar;
         }
       }
-      flowTime += 0.002;
+      flowTime += 0.0015;
     }
 
     function drawAmbientFlow() {
@@ -513,8 +524,17 @@
         if (p.y > height) p.y = 0;
         
         if (p.life <= 0) {
-          p.x = Math.random() * width;
-          p.y = Math.random() * height;
+          // Respawn at edges or random spread positions
+          const edge = Math.random();
+          if (edge < 0.25) {
+            p.x = 0; p.y = Math.random() * height;
+          } else if (edge < 0.5) {
+            p.x = width; p.y = Math.random() * height;
+          } else if (edge < 0.75) {
+            p.x = Math.random() * width; p.y = 0;
+          } else {
+            p.x = Math.random() * width; p.y = height;
+          }
           p.vx = p.vy = 0;
           p.life = p.maxLife;
         }
