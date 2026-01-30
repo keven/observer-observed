@@ -449,6 +449,96 @@
 
     let particles = [];
 
+    // Ambient flow field (subtle zen background)
+    let flowParticles = [];
+    let flowField = [];
+    let flowCols, flowRows;
+    const flowScale = 30;
+    let flowTime = 0;
+
+    function initFlowField() {
+      flowCols = Math.floor(width / flowScale) + 1;
+      flowRows = Math.floor(height / flowScale) + 1;
+      flowField = new Array(flowCols * flowRows);
+      flowParticles = [];
+      const count = Math.floor((width * height) / 15000); // Very sparse
+      for (let i = 0; i < count; i++) {
+        flowParticles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: 0, vy: 0,
+          life: Math.random() * 300 + 200,
+          maxLife: 500
+        });
+      }
+    }
+
+    function flowNoise(x, y, z) {
+      return (Math.sin(x * 0.4 + z) * Math.cos(y * 0.4 + z * 0.7) +
+              Math.sin(x * 0.2 - z * 0.3) * Math.cos(y * 0.2) * 0.5 + 1.5) / 3;
+    }
+
+    function updateFlowField() {
+      for (let y = 0; y < flowRows; y++) {
+        for (let x = 0; x < flowCols; x++) {
+          flowField[x + y * flowCols] = flowNoise(x * 0.08, y * 0.08, flowTime) * Math.PI * 2;
+        }
+      }
+      flowTime += 0.002;
+    }
+
+    function drawAmbientFlow() {
+      updateFlowField();
+      const hue = state.hue;
+      
+      for (const p of flowParticles) {
+        const col = Math.floor(p.x / flowScale);
+        const row = Math.floor(p.y / flowScale);
+        const idx = col + row * flowCols;
+        
+        if (flowField[idx] !== undefined) {
+          p.vx += Math.cos(flowField[idx]) * 0.03;
+          p.vy += Math.sin(flowField[idx]) * 0.03;
+        }
+        
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vx *= 0.99;
+        p.vy *= 0.99;
+        p.life--;
+        
+        if (p.x < 0) p.x = width;
+        if (p.x > width) p.x = 0;
+        if (p.y < 0) p.y = height;
+        if (p.y > height) p.y = 0;
+        
+        if (p.life <= 0) {
+          p.x = Math.random() * width;
+          p.y = Math.random() * height;
+          p.vx = p.vy = 0;
+          p.life = p.maxLife;
+        }
+        
+        const alpha = Math.min(p.life / 80, 1) * Math.min((p.maxLife - p.life) / 40, 1) * 0.15;
+        
+        // Subtle dot
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 1, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${hue}, 20%, 50%, ${alpha})`;
+        ctx.fill();
+        
+        // Gentle trail
+        if (Math.abs(p.vx) > 0.01 || Math.abs(p.vy) > 0.01) {
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(p.x - p.vx * 8, p.y - p.vy * 8);
+          ctx.strokeStyle = `hsla(${hue}, 15%, 40%, ${alpha * 0.5})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+
     // Keywords
     const keywords = {
       // Colors
@@ -645,6 +735,7 @@
     function resize() {
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
+      initFlowField();
     }
 
     function initParticles() {
@@ -786,6 +877,9 @@
       ctx.globalAlpha = 0.08;
       ctx.fillRect(0, 0, width, height);
       ctx.globalAlpha = 1;
+      
+      // Ambient flow (subtle background)
+      drawAmbientFlow();
       
       // Draw layers
       if (state.hasNebula) drawNebula();
