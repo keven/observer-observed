@@ -1122,6 +1122,41 @@
       ctx.fillRect(0, 0, width, height);
     }
 
+    // Mobile touch gestures
+    let touchStartDist = 0;
+    let touchStartAngle = 0;
+    let initialScale = 0.5;
+    let initialRotation = 0;
+
+    canvas.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 2) {
+        const dx = e.touches[1].clientX - e.touches[0].clientX;
+        const dy = e.touches[1].clientY - e.touches[0].clientY;
+        touchStartDist = Math.sqrt(dx * dx + dy * dy);
+        touchStartAngle = Math.atan2(dy, dx);
+        initialScale = state.fractalScale;
+        initialRotation = state.globalRotation;
+      }
+    }, { passive: true });
+
+    canvas.addEventListener('touchmove', (e) => {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        const dx = e.touches[1].clientX - e.touches[0].clientX;
+        const dy = e.touches[1].clientY - e.touches[0].clientY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const angle = Math.atan2(dy, dx);
+        
+        // Pinch to zoom
+        const scaleDelta = dist / touchStartDist;
+        state.fractalScale = Math.max(0.2, Math.min(1.5, initialScale * scaleDelta));
+        
+        // Two-finger rotate
+        const angleDelta = angle - touchStartAngle;
+        state.globalRotation = initialRotation + angleDelta;
+      }
+    }, { passive: false });
+
     // Start
     init();
   </script>
