@@ -721,6 +721,31 @@
         question.classList.add('faded');
       } else {
         question.classList.remove('faded');
+        // Reset visual effects when input is cleared
+        state.hasStars = false;
+        state.hasWater = false;
+        state.hasFire = false;
+        state.hasVoid = true;
+        state.hasLight = false;
+        state.hasGeometry = false;
+        state.hasNebula = false;
+        state.rainbowMode = false;
+        // Reset to default visual state
+        state.targetHue = 240;
+        state.targetSaturation = 15;
+        state.targetLightness = 5;
+        state.brightness = 0.25;
+        state.fractalDepth = 3;
+        state.fractalType = 'tree';
+        state.particleCount = 60;
+        state.particleSpeed = 0.2;
+        state.rotationSpeed = 0.0003;
+        state.pulseSpeed = 0.008;
+        state.chaos = 0;
+        state.intensity = 0.2;
+        // Clear word history
+        allWords = [];
+        wordHistory.innerHTML = '';
       }
       
       lastInputTime = Date.now();
