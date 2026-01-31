@@ -688,7 +688,47 @@
       'observed': () => { state.complexity = 0.85; state.fractalDepth = 7; },
       'one': () => { state.fractalDepth = 1; state.particleCount = 1; state.brightness = 0.8; state.hasLight = true; },
       'unity': () => { state.fractalType = 'mandala'; state.order = 1; state.brightness = 0.6; },
-      'wholeness': () => { state.fractalType = 'mandala'; state.fractalBranches = 8; state.order = 1; state.complexity = 0.9; }
+      'wholeness': () => { state.fractalType = 'mandala'; state.fractalBranches = 8; state.order = 1; state.complexity = 0.9; },
+
+      // Presets - curated mood combinations
+      'meditation': () => {
+        state.targetHue = 240; state.targetSaturation = 20; state.targetLightness = 5;
+        state.fractalType = 'mandala'; state.fractalDepth = 5; state.fractalBranches = 8;
+        state.particleSpeed = 0.1; state.rotationSpeed = 0.0002; state.pulseSpeed = 0.006;
+        state.calm = 1; state.chaos = 0; state.brightness = 0.3;
+      },
+      'cosmic': () => {
+        state.targetHue = 270; state.targetSaturation = 50; state.targetLightness = 3;
+        state.fractalType = 'spiral'; state.fractalDepth = 9; state.hasStars = true; state.hasNebula = true;
+        state.particleCount = 400; state.rotationSpeed = 0.001; state.brightness = 0.5;
+      },
+      'forest': () => {
+        state.targetHue = 140; state.targetSaturation = 45; state.targetLightness = 6;
+        state.fractalType = 'tree'; state.fractalDepth = 7; state.fractalBranches = 3;
+        state.particleSpeed = 0.15; state.calm = 0.9; state.brightness = 0.35;
+      },
+      'ocean': () => {
+        state.targetHue = 200; state.targetSaturation = 55; state.targetLightness = 5;
+        state.hasWater = true; state.pulseSpeed = 0.008; state.calm = 0.85;
+        state.particleSpeed = 0.2; state.brightness = 0.4;
+      },
+      'zen': () => {
+        state.targetHue = 30; state.targetSaturation = 10; state.targetLightness = 3;
+        state.fractalType = 'mandala'; state.fractalDepth = 4; state.fractalBranches = 6;
+        state.particleCount = 30; state.particleSpeed = 0.05; state.rotationSpeed = 0;
+        state.calm = 1; state.brightness = 0.25;
+      },
+      'aurora': () => {
+        state.targetHue = 160; state.targetSaturation = 60;
+        state.hasNebula = true; state.hasStars = true;
+        state.pulseSpeed = 0.015; state.brightness = 0.5;
+        state.particleCount = 200;
+      },
+      'inferno': () => {
+        state.targetHue = 15; state.targetSaturation = 100; state.targetLightness = 4;
+        state.hasFire = true; state.chaos = 0.5; state.intensity = 0.9;
+        state.particleSpeed = 1.2; state.brightness = 0.6;
+      }
     };
 
     // Init
