@@ -192,6 +192,44 @@
       box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
     }
 
+    #toggle-keywords {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 44px;
+      height: 44px;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.8rem;
+      font-weight: 300;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      color: rgba(255, 255, 255, 0.6);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 25;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    #toggle-keywords:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.35);
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    #keyword-grid.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(20px);
+    }
+
+    #keyword-grid {
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
     #clear-btn {
       position: fixed;
       bottom: 20px;
@@ -415,6 +453,9 @@
   
   <!-- Clear Button -->
   <button id="clear-btn">Clear All</button>
+  
+  <!-- Toggle Keywords Button -->
+  <button id="toggle-keywords">−</button>
 
   <!-- Word History -->
   <div id="word-history"></div>
@@ -450,7 +491,9 @@
     const interfaceEl = document.getElementById('interface');
     const keywordGrid = document.getElementById('keyword-grid');
     const clearBtn = document.getElementById('clear-btn');
+    const toggleBtn = document.getElementById('toggle-keywords');
     const question = document.getElementById('question');
+    let keywordsVisible = true;
     const wordEcho = document.getElementById('word-echo');
     const wordHistory = document.getElementById('word-history');
     const reveal = document.getElementById('reveal');
@@ -702,6 +745,7 @@
       intro.addEventListener('click', startExperience);
       intro.addEventListener('touchstart', startExperience);
       clearBtn.addEventListener('click', clearAll);
+      toggleBtn.addEventListener('click', toggleKeywords);
       generateKeywordButtons();
       initParticles();
       animate();
@@ -795,6 +839,17 @@
       state.complexity = 0.3;
       state.intensity = 0.2;
       state.calm = 0.5;
+    }
+
+    function toggleKeywords() {
+      keywordsVisible = !keywordsVisible;
+      if (keywordsVisible) {
+        keywordGrid.classList.remove('hidden');
+        toggleBtn.textContent = '−';
+      } else {
+        keywordGrid.classList.add('hidden');
+        toggleBtn.textContent = '+';
+      }
     }
 
     function clearAll() {
