@@ -466,7 +466,10 @@
       
       // Smoothing
       currentBrightness: 0.25,
-      currentComplexity: 0.3
+      currentComplexity: 0.3,
+      
+      // Special modes
+      rainbowMode: false
     };
 
     let particles = [];
@@ -688,7 +691,33 @@
       'observed': () => { state.complexity = 0.85; state.fractalDepth = 7; },
       'one': () => { state.fractalDepth = 1; state.particleCount = 1; state.brightness = 0.8; state.hasLight = true; },
       'unity': () => { state.fractalType = 'mandala'; state.order = 1; state.brightness = 0.6; },
-      'wholeness': () => { state.fractalType = 'mandala'; state.fractalBranches = 8; state.order = 1; state.complexity = 0.9; }
+      'wholeness': () => { state.fractalType = 'mandala'; state.fractalBranches = 8; state.order = 1; state.complexity = 0.9; },
+      
+      // Special keywords
+      'rainbow': () => { 
+        state.targetSaturation = 100; 
+        state.brightness = 0.7; 
+        state.fractalType = 'spiral'; 
+        state.fractalDepth = 8;
+        state.rotationSpeed = 0.003;
+        state.particleCount = 200;
+        state.hasLight = true;
+        // Rainbow hue cycling is handled in animation
+        state.rainbowMode = true;
+      },
+      'hotdog': () => { 
+        state.targetHue = 25; 
+        state.targetSaturation = 95; 
+        state.brightness = 0.65;
+        state.hasFire = true;
+        state.pulseSpeed = 0.025;
+        state.particleSpeed = 0.8;
+        state.chaos = 0.3;
+        state.fractalType = 'tree';
+        state.fractalBranches = 2;
+        state.fractalDepth = 5;
+        state.intensity = 0.7;
+      }
     };
 
     // Init
@@ -843,7 +872,8 @@
         hasStars: false, hasWater: false, hasFire: false,
         hasVoid: true, hasLight: false, hasGeometry: false, hasNebula: false,
         calm: 0.5, intensity: 0.2,
-        currentBrightness: 0.25, currentComplexity: 0.3
+        currentBrightness: 0.25, currentComplexity: 0.3,
+        rainbowMode: false
       };
       
       initParticles();
@@ -858,7 +888,11 @@
       time++;
       
       // Smooth transitions
-      state.hue += (state.targetHue - state.hue) * 0.02;
+      if (state.rainbowMode) {
+        state.hue = (time * 0.5) % 360; // Cycle through all colors
+      } else {
+        state.hue += (state.targetHue - state.hue) * 0.02;
+      }
       state.saturation += (state.targetSaturation - state.saturation) * 0.02;
       state.lightness += (state.targetLightness - state.lightness) * 0.02;
       state.currentBrightness += (state.brightness - state.currentBrightness) * 0.03;
