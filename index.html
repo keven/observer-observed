@@ -136,38 +136,133 @@
       transform: translateY(-30px) scale(0.95);
     }
 
-    #input-container {
+    #keyword-grid {
       position: relative;
       width: 100%;
-      max-width: 650px;
+      max-width: 900px;
+      max-height: 45vh;
+      overflow-y: auto;
+      padding: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.2) transparent;
     }
 
-    #user-input {
-      width: 100%;
-      padding: 22px 35px;
-      font-size: clamp(1.2rem, 3vw, 1.9rem);
+    #keyword-grid::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #keyword-grid::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    #keyword-grid::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.2);
+      border-radius: 3px;
+    }
+
+    .keyword-btn {
+      padding: 8px 16px;
       font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(0.85rem, 2vw, 1.1rem);
       font-weight: 400;
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      color: rgba(255, 255, 255, 0.6);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      letter-spacing: 0.05em;
+    }
+
+    .keyword-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.25);
       color: rgba(255, 255, 255, 0.9);
-      text-align: center;
-      outline: none;
-      transition: all 0.6s ease;
-      letter-spacing: 0.06em;
+      transform: scale(1.05);
     }
 
-    #user-input::placeholder {
-      color: rgba(255, 255, 255, 0.25);
-      font-style: italic;
+    .keyword-btn.active {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.4);
+      color: rgba(255, 255, 255, 1);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+    }
+
+    #keyword-grid.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(20px);
+    }
+
+    #keyword-grid {
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    #bottom-controls {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      z-index: 20;
+    }
+
+    #toggle-keywords {
+      width: 40px;
+      height: 40px;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.6rem;
       font-weight: 300;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 50%;
+      color: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
     }
 
-    #user-input:focus {
-      background: rgba(255, 255, 255, 0.04);
-      border-color: rgba(255, 255, 255, 0.15);
-      box-shadow: 0 0 40px rgba(255, 255, 255, 0.03);
+    #toggle-keywords:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.3);
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    #clear-btn {
+      padding: 10px 30px;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 0.9rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 25px;
+      color: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+      z-index: 20;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #clear-btn.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #clear-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.3);
+      color: rgba(255, 255, 255, 0.8);
     }
 
     /* Word Echo */
@@ -349,8 +444,14 @@
         display: none;
       }
       
-      #user-input {
-        padding: 18px 20px;
+      #keyword-grid {
+        max-height: 35vh;
+        gap: 6px;
+      }
+      
+      .keyword-btn {
+        padding: 6px 12px;
+        font-size: 0.8rem;
       }
     }
   </style>
@@ -369,9 +470,13 @@
   <!-- Main Interface -->
   <div id="interface">
     <div id="question">What do you see?</div>
-    <div id="input-container">
-      <input type="text" id="user-input" placeholder="describe what appears..." autocomplete="off" spellcheck="false">
-    </div>
+    <div id="keyword-grid"></div>
+  </div>
+  
+  <!-- Bottom Controls -->
+  <div id="bottom-controls">
+    <button id="toggle-keywords">+</button>
+    <button id="clear-btn">Clear All</button>
   </div>
 
   <!-- Word History -->
@@ -407,8 +512,11 @@
     const ctx = canvas.getContext('2d');
     const intro = document.getElementById('intro');
     const interfaceEl = document.getElementById('interface');
-    const input = document.getElementById('user-input');
+    const keywordGrid = document.getElementById('keyword-grid');
+    const clearBtn = document.getElementById('clear-btn');
+    const toggleBtn = document.getElementById('toggle-keywords');
     const question = document.getElementById('question');
+    let keywordsVisible = false;
     const wordEcho = document.getElementById('word-echo');
     const wordHistory = document.getElementById('word-history');
     const reveal = document.getElementById('reveal');
@@ -726,15 +834,140 @@
       window.addEventListener('resize', resize);
       intro.addEventListener('click', startExperience);
       intro.addEventListener('touchstart', startExperience);
-      input.addEventListener('input', handleInput);
+      clearBtn.addEventListener('click', clearAll);
+      toggleBtn.addEventListener('click', toggleKeywords);
+      generateKeywordButtons();
       initParticles();
       animate();
+    }
+
+    function generateKeywordButtons() {
+      // Get all keyword names and sort them
+      const keywordNames = Object.keys(keywords).sort();
+      
+      keywordNames.forEach(word => {
+        const btn = document.createElement('button');
+        btn.className = 'keyword-btn';
+        btn.textContent = word;
+        btn.dataset.keyword = word;
+        btn.addEventListener('click', () => handleKeywordClick(word, btn));
+        keywordGrid.appendChild(btn);
+      });
+    }
+
+    function handleKeywordClick(word, btn) {
+      if (!started) return;
+      
+      if (allWords.includes(word)) {
+        // Deactivate keyword
+        const index = allWords.indexOf(word);
+        allWords.splice(index, 1);
+        btn.classList.remove('active');
+        
+        // Reset and reapply remaining keywords
+        resetState();
+        allWords.forEach(w => {
+          if (keywords[w]) keywords[w]();
+        });
+      } else {
+        // Activate keyword
+        keywords[word]();
+        allWords.push(word);
+        btn.classList.add('active');
+        showWordEcho(word);
+        addToHistory(word);
+      }
+      
+      // Update particles
+      while (particles.length < state.particleCount) {
+        particles.push(createParticle());
+      }
+      while (particles.length > state.particleCount && particles.length > 0) {
+        particles.pop();
+      }
+      
+      // Update UI
+      if (allWords.length > 0) {
+        question.classList.add('faded');
+        clearBtn.classList.add('visible');
+      } else {
+        question.classList.remove('faded');
+        clearBtn.classList.remove('visible');
+      }
+      
+      lastInputTime = Date.now();
+      
+      if (allWords.length >= 5 && !revealTriggered) {
+        setTimeout(checkForReveal, 10000);
+      }
+    }
+
+    function resetState() {
+      state.hasStars = false;
+      state.hasWater = false;
+      state.hasFire = false;
+      state.hasVoid = true;
+      state.hasLight = false;
+      state.hasGeometry = false;
+      state.hasNebula = false;
+      state.rainbowMode = false;
+      state.targetHue = 240;
+      state.targetSaturation = 15;
+      state.targetLightness = 5;
+      state.brightness = 0.25;
+      state.fractalDepth = 3;
+      state.fractalType = 'tree';
+      state.fractalScale = 0.5;
+      state.fractalBranches = 2;
+      state.particleCount = 60;
+      state.particleSpeed = 0.2;
+      state.particleSize = 1.5;
+      state.rotationSpeed = 0.0003;
+      state.pulseSpeed = 0.008;
+      state.chaos = 0;
+      state.order = 0.5;
+      state.complexity = 0.3;
+      state.intensity = 0.2;
+      state.calm = 0.5;
+    }
+
+    function toggleKeywords() {
+      keywordsVisible = !keywordsVisible;
+      if (keywordsVisible) {
+        keywordGrid.classList.remove('hidden');
+        toggleBtn.textContent = '−';
+      } else {
+        keywordGrid.classList.add('hidden');
+        toggleBtn.textContent = '+';
+      }
+    }
+
+    function clearAll() {
+      allWords = [];
+      resetState();
+      
+      // Remove active class from all buttons
+      document.querySelectorAll('.keyword-btn.active').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      wordHistory.innerHTML = '';
+      question.classList.remove('faded');
+      clearBtn.classList.remove('visible');
+      
+      // Update particles
+      while (particles.length > state.particleCount && particles.length > 0) {
+        particles.pop();
+      }
     }
 
     function startExperience() {
       if (started) return;
       started = true;
       intro.classList.add('hidden');
+      
+      // Start with keywords hidden
+      keywordGrid.classList.add('hidden');
       
       // Apply random initial animation from curated keywords
       const startingKeywords = [
@@ -754,7 +987,6 @@
       
       setTimeout(() => {
         interfaceEl.classList.add('visible');
-        input.focus();
       }, 500);
     }
 
@@ -782,6 +1014,7 @@
       };
     }
 
+<<<<<<< HEAD
     // Word combinations for special effects
     const combos = {
       'sacred geometry': () => { state.fractalType = 'mandala'; state.fractalBranches = 12; state.hasGeometry = true; state.targetHue = 50; state.brightness = 0.55; },
@@ -841,6 +1074,8 @@
       }
     }
 
+=======
+>>>>>>> feature/random-initial-animation
     function showWordEcho(word) {
       wordEcho.textContent = word;
       wordEcho.classList.add('visible');
@@ -879,9 +1114,14 @@
       reveal.classList.remove('visible');
       revealTriggered = false;
       allWords = [];
-      input.value = '';
       question.classList.remove('faded');
       wordHistory.innerHTML = '';
+      clearBtn.classList.remove('visible');
+      
+      // Remove active class from all buttons
+      document.querySelectorAll('.keyword-btn.active').forEach(btn => {
+        btn.classList.remove('active');
+      });
       
       // Reset state
       state = {
@@ -901,7 +1141,6 @@
       };
       
       initParticles();
-      input.focus();
     }
 
     // ============================================
