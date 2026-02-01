@@ -192,34 +192,6 @@
       box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
     }
 
-    #toggle-keywords {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 44px;
-      height: 44px;
-      font-family: 'Cormorant Garamond', Georgia, serif;
-      font-size: 1.8rem;
-      font-weight: 300;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 50%;
-      color: rgba(255, 255, 255, 0.6);
-      cursor: pointer;
-      transition: all 0.3s ease;
-      z-index: 25;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      line-height: 1;
-    }
-
-    #toggle-keywords:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.35);
-      color: rgba(255, 255, 255, 0.9);
-    }
-
     #keyword-grid.hidden {
       opacity: 0;
       pointer-events: none;
@@ -230,11 +202,42 @@
       transition: opacity 0.4s ease, transform 0.4s ease;
     }
 
-    #clear-btn {
+    #bottom-controls {
       position: fixed;
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      z-index: 20;
+    }
+
+    #toggle-keywords {
+      width: 40px;
+      height: 40px;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.6rem;
+      font-weight: 300;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 50%;
+      color: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    #toggle-keywords:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.3);
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    #clear-btn {
       padding: 10px 30px;
       font-family: 'Cormorant Garamond', Georgia, serif;
       font-size: 0.9rem;
@@ -451,11 +454,11 @@
     <div id="keyword-grid"></div>
   </div>
   
-  <!-- Clear Button -->
-  <button id="clear-btn">Clear All</button>
-  
-  <!-- Toggle Keywords Button -->
-  <button id="toggle-keywords">−</button>
+  <!-- Bottom Controls -->
+  <div id="bottom-controls">
+    <button id="toggle-keywords">+</button>
+    <button id="clear-btn">Clear All</button>
+  </div>
 
   <!-- Word History -->
   <div id="word-history"></div>
@@ -493,7 +496,7 @@
     const clearBtn = document.getElementById('clear-btn');
     const toggleBtn = document.getElementById('toggle-keywords');
     const question = document.getElementById('question');
-    let keywordsVisible = true;
+    let keywordsVisible = false;
     const wordEcho = document.getElementById('word-echo');
     const wordHistory = document.getElementById('word-history');
     const reveal = document.getElementById('reveal');
@@ -875,6 +878,9 @@
       if (started) return;
       started = true;
       intro.classList.add('hidden');
+      
+      // Start with keywords hidden
+      keywordGrid.classList.add('hidden');
       
       // Apply random initial animation from curated keywords
       const startingKeywords = [
