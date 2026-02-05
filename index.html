@@ -1161,6 +1161,19 @@
       state.globalRotation += state.rotationSpeed;
       state.pulse += state.pulseSpeed;
       
+      // Slow evolution - visuals gently drift over time
+      if (time % 600 === 0) { // Every ~10 seconds at 60fps
+        state.targetHue = (state.targetHue + (Math.random() - 0.5) * 8) % 360;
+        if (state.targetHue < 0) state.targetHue += 360;
+      }
+      if (time % 1800 === 0) { // Every ~30 seconds
+        state.fractalScale = Math.max(0.3, Math.min(0.8, state.fractalScale + (Math.random() - 0.5) * 0.1));
+        state.brightness = Math.max(0.15, Math.min(0.6, state.brightness + (Math.random() - 0.5) * 0.05));
+      }
+      if (time % 3600 === 0) { // Every ~60 seconds
+        state.rotationSpeed = Math.max(0, Math.min(0.002, state.rotationSpeed + (Math.random() - 0.5) * 0.0003));
+      }
+      
       // Clear
       const bgL = state.lightness;
       ctx.fillStyle = `hsl(${state.hue}, ${state.saturation}%, ${bgL}%)`;
